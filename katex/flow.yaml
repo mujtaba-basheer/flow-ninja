@@ -1,0 +1,8 @@
+on country change:
+  get country name:
+    does country has GDPR:
+      yes:
+        uncheck checkbox if checked
+        unhide checkbox
+      no:
+        hide checkbox

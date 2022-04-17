@@ -1,0 +1,12 @@
+form[data-zi-mapped-form]
+  > div:not(.hs-submit):not(.hs-email):not(.legal-consent-container) {
+  display: none;
+}
+
+form[data-zi-mapped-form] > div[data-zi-field-enriched="false"] {
+  display: block !important;
+}
+
+form[data-zi-mapped-form] > div[data-zi-field-enriched="true"] {
+  display: none;
+}

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"
+    integrity="sha384-R4558gYOUz8mP9YWpZJjofhk+zx0AS11p36HnD2ZKj/6JR5z27gSSULCNHIRReVs" crossorigin="anonymous">
+
+  <!-- The loading of KaTeX is deferred to speed up page rendering -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.js"
+    integrity="sha384-z1fJDqw8ZApjGO3/unPWUPsIymfsJmyrDVWC8Tv/a1HeOtGmkwNd/7xUS0Xcnvsx"
+    crossorigin="anonymous"></script>
+
+  <!-- To automatically render math in text elements, include the auto-render extension: -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/contrib/auto-render.min.js"
+    integrity="sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+  <title>KaTeX</title>
+</head>
+
+<body>
+  <p id="formula"></p>
+
+  <script src="app.js"></script>
+  <script>
+    window.addEventListener("load", () => {
+      const inputFields = document.querySelectorAll('input:not([type="email"]):not([type="submit"]):not([type="hidden"])');
+
+      const callback = (mutationList) => {
+        mutationList.forEach(function (mutation) {
+          switch (mutation.type) {
+            case "attributes":
+              if (mutation.target.getAttribute(mutation.attributeName) === "false") mutation.target.parentNode.parentNode.style.display = "block !important";
+              else if (mutation.target.getAttribute(mutation.attributeName) === "true") mutation.target.parentNode.parentNode.style.display = "none";
+              break;
+          }
+        });
+      }
+      const config = {
+        attributeFilter: ["data-zi-input-enriched"],
+        attributeOldValue: true,
+        attributes: true
+      };
+      const observer = new MutationObserver(callback);
+      inputFields.forEach(inputField => observer.observe(inputField, config));
+    });
+  </script>
+  <script>
+    window.addEventListener("load", () => {
+      const inputFields = document.querySelectorAll('form > div:not(.hs-submit):not(.hs-email):not(.legal-consent-container)');
+
+      const callback = (mutationList) => {
+        mutationList.forEach(function (mutation) {
+          switch (mutation.type) {
+            case "attributes":
+              console.log(mutation.target, mutation.target.getAttribute(mutation.attributeName));
+              if (mutation.target.getAttribute(mutation.attributeName) === "false") mutation.target.style.display = "block !important";
+              else if (mutation.target.getAttribute(mutation.attributeName) === "true") mutation.target.style.display = "none";
+              break;
+          }
+        });
+      }
+      const config = {
+        attributeFilter: ["data-zi-field-enriched"],
+        attributeOldValue: true,
+        attributes: true
+      };
+      const observer = new MutationObserver(callback);
+
+      inputFields.forEach(inputField => {
+        observer.observe(inputField, config);
+        inputField.style.display = "none";
+      });
+    });
+  </script>
+</body>
+
+</html>

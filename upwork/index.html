@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>jQuery</title>
+</head>
+
+<body>
+  <script>
+    let breakpoint = 767, characterLimit = 60, elSelector = '.new-rich-text > p:first-child';
+    const minText = () => {
+      let text = $(elSelector).html();
+      if ($(window).width() <= breakpoint && text.length > characterLimit) {
+        text = text.substring(0, characterLimit) + '... ';
+        $(elSelector).html(text);
+      }
+    }
+    window.addEventListener("load", minText);
+    window.addEventListener("resize", minText)
+  </script>
+  <script>
+    window.addEventListener('DOMContentLoaded', (event) => {
+
+      function changeHeroHeight() {
+        if ($(window).height() <= 600) return;
+        var customHeightContainer = document.querySelector('[data-height]');
+        var notificationBarHeight = document.querySelector('.notification-banner');
+
+        if (customHeightContainer && notificationBarHeight.offsetHeight != null) {
+          customHeightContainer.style.height = window.innerHeight - notificationBarHeight.offsetHeight + 'px';
+        }
+      }
+
+      window.addEventListener('resize', changeHeroHeight, true);
+
+      var closeNotificationBar = document.querySelector('.collection-list-wrapper-notification .notification-close-wrapper');
+
+      if (closeNotificationBar) {
+        closeNotificationBar.addEventListener('click', function () {
+          setTimeout(changeHeroHeight, 300);
+        });
+      }
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tab Switch</title>
+
+  <style>
+    .container {
+      padding: 1em;
+    }
+
+    .wc-container {
+      border: 1.5px solid black;
+    }
+
+    .wc-tab-list {
+      display: flex;
+      align-content: center;
+      justify-content: space-between;
+      border-bottom: 1px solid black;
+      padding: 1em 2em;
+      border: none;
+      outline: none;
+    }
+
+    .wc-tab-item {
+      background: red;
+      padding: 0.5em 0.75em;
+    }
+
+    .wc-tab-item.active {
+      background: blueviolet;
+    }
+
+    .wc-slide {
+      background: #ddd;
+    }
+
+    .wc-slide-content {
+      font-size: 3rem;
+      height: 200px;
+      width: 100%;
+      display: grid;
+      place-items: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="wc-container">
+      <div class="wc-tab-list">
+        <button class="wc-tab-item active" data-index="0">Tab 1</button>
+        <button class="wc-tab-item" data-index="1">Tab 2</button>
+        <button class="wc-tab-item" data-index="2">Tab 3</button>
+      </div>
+
+      <div class="wc-slide-wrapper">
+        <div class="wc-slide" data-index="0">
+          <div class="wc-slide-content">1</div>
+        </div>
+        <div class="wc-slide" data-index="1">
+          <div class="wc-slide-content">2</div>
+        </div>
+        <div class="wc-slide" data-index="2">
+          <div class="wc-slide-content">3</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+  <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+      $(".wc-slide-wrapper").slick({
+        arrows: false,
+        draggable: false,
+        adaptiveHeight: true,
+      });
+
+      function setActiveTab(activeIndex) {
+        $(".wc-tab-item").each(function () {
+          const index = Number($(this).attr('data-index'));
+          if (activeIndex === index) $(this).addClass('active');
+          else $(this).removeClass('active');
+        })
+      }
+
+      $(".wc-tab-item").each(function () {
+        const index = $(this).attr("data-index");
+        $(this).on('click', function () {
+          setActiveTab(Number(index));
+          $(".wc-slide-wrapper").slick('slickGoTo', Number(index), false);
+        })
+      })
+    });
+  </script>
+</body>
+
+</html>

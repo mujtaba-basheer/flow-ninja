@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vimeo</title>
+</head>
+
+<body>
+  <a style="display: block; margin-bottom: 5em;" href="#">Play</a>
+
+  <script>
+    window.addEventListener("load", () => {
+      const aTag = document.querySelector("a");
+      aTag.addEventListener("click", () => {
+        const iFrame = document.createElement("iframe");
+        iFrame.setAttribute("allow", "autoplay; fullscreen");
+        iFrame.setAttribute("src", "https://player.vimeo.com/video/76979871?autoplay=1&controls=0");
+        iFrame.setAttribute("width", "640");
+        iFrame.setAttribute("height", "360");
+        iFrame.setAttribute("frameborder", "0");
+        iFrame.setAttribute("webkitallowfullscreen", "");
+        iFrame.setAttribute("allowfullscreen", "");
+        document.body.appendChild(iFrame);
+      })
+    })
+  </script>
+</body>
+
+</html>

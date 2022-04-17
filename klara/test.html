@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document 1</title>
+
+  <style>
+    div {
+      height: 100vh;
+      background-color: aqua;
+      border-bottom: 1px solid brown;
+    }
+  </style>
+</head>
+
+<body>
+  <div>
+    <a href="test2.html?type=test#div-3">Link!</a>
+  </div>
+  <div></div>
+  <div></div>
+  <div></div>
+
+  <script>
+    var url = window.location.href;
+    var hash = url.substring(url.indexOf('#') + 1)
+    console.log(hash);
+    window.addEventListener("load", function () {
+      var buttonToClick = document.getElementById("#category-id");
+      if (hash === buttonToClick) {
+        $(buttonToClick).trigger("click");
+      }
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>jQuery</title>
+</head>
+
+<body>
+  <div class="container">
+    <button id="btn">even</button>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script>
+    window.addEventListener("load", function () {
+      const buttonEl = $("button#btn");
+      let mutiplier = 1;
+
+      const toggleClick = () => {
+        const status = sessionStorage.getItem("click-status");
+        const scrollPx = 100;
+        let statusTo = "odd";
+        mutiplier *= -1;
+
+        if (status === "odd") {
+          statusTo = "even";
+        }
+
+        sessionStorage.setItem("click-status", statusTo);
+        buttonEl.text(statusTo);
+      }
+
+      buttonEl.on("click", toggleClick);
+    });
+  </script>
+</body>
+
+</html>

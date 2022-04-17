@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>jQuery</title>
+</head>
+
+<body>
+
+  <script>
+    const steps = 100;
+    const delay = () => new Promise((res, rej) => {
+      setTimeout(res(null), 1000);
+    })
+    const numFormat = new Intl.NumberFormat('en-IN');
+    const countdown = async (el, init = 0) => {
+      console.log({ init })
+      const inc = init / steps;
+      el.textContent = '0';
+      for (let i = 0; i <= steps; i++) {
+        await delay();
+        console.log(numFormat.format(Math.round(inc * i)))
+        el.textContent = `${numFormat.format(Math.round(inc * i))}`;
+      }
+      el.textContent = numFormat.format(init);
+    }
+    const options = { rootMargin: '0px 0px -100px 0px', threshold: 1.0 }
+    const callback = (entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const el = entry.target;
+          countdown(el, Number(el.textContent.replace(",", "")));
+          observer.unobserve(el);
+        }
+      });
+    };
+    const observer = new IntersectionObserver(callback, options);
+    const targets = document.querySelectorAll(".count-up-number");
+    targets.forEach(target => observer.observe(target));
+
+    window.addEventListener("load", () => {
+      // setting intersection observer
+      const options = { threshold: 1.0 }
+      const callback = (entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const el = entry.target;
+            countdown(el, Number(el.textContent.replace(",", "")));
+            observer.unobserve(el);
+          }
+        });
+      };
+      const observer = new IntersectionObserver(callback, options);
+      const targets = document.querySelectorAll(".count-up-number");
+      targets.forEach(target => observer.observe(target));
+    });
+  </script>
+</body>
+
+</html>

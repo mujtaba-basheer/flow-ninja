@@ -1,0 +1,77 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.container {
+  margin-top: 20vh;
+  text-align: center;
+}
+
+/* .pill {
+  border-radius: 1em;
+  background-color: aquamarine;
+  width: min-content;
+  margin: 0 auto;
+
+  display: block;
+  overflow: hidden;
+  height: auto;
+  opacity: 1;
+  transform: translate(0, 0) scale(1);
+  transition: opacity 0.3s linear, width 1s cubic-bezier(0.215, 0.61, 0.355, 1),
+    height 1s cubic-bezier(0.215, 0.61, 0.355, 1),
+    transform 0.3s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+.pill.animated-pill {
+  width: 0;
+  height: 0;
+  opacity: 0;
+  transform: translate(-100px, 0) scale(0);
+  transition: transform 0.3s cubic-bezier(0.215, 0.61, 0.355, 1),
+    opacity 0.3s linear, width 1s cubic-bezier(0.215, 0.61, 0.355, 1),
+    height 1s cubic-bezier(0.215, 0.61, 0.355, 1);
+} */
+
+.pill {
+  border-radius: 1em;
+  background-color: aquamarine;
+  display: block;
+  overflow: hidden;
+  margin: 0 auto;
+
+  width: 0;
+  height: 0;
+  opacity: 0;
+  transform: translate(-100px, 0) scale(0);
+  transition: opacity 0.3s linear, width 1s cubic-bezier(0.215, 0.61, 0.355, 1),
+    height 1s cubic-bezier(0.215, 0.61, 0.355, 1),
+    transform 0.3s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+.pill.animated-pill {
+  width: min-content;
+  height: auto;
+  opacity: 1;
+  transform: translate(0, 0) scale(1);
+  transition: transform 0.3s cubic-bezier(0.215, 0.61, 0.355, 1),
+    opacity 0.3s linear, width 1s cubic-bezier(0.215, 0.61, 0.355, 1),
+    height 1s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+.pill a {
+  display: inline-block;
+  width: max-content;
+  padding: 1.5em 2em;
+  text-transform: uppercase;
+  font-weight: 600;
+  text-decoration: none;
+  color: currentColor;
+}
+
+#tg-anim {
+  padding: 1em 1.5em;
+  margin-top: 10em;
+}
