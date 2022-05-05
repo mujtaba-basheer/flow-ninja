@@ -21,6 +21,7 @@ window.addEventListener("load", () => {
 
   let { form_data, results } = ls;
   let modulesSet;
+  console.log(JSON.stringify(form_data));
 
   ls.setBusinessComplexity();
   ls.setBusinessDifficulty();

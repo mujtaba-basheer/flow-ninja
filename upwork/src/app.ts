@@ -1,8 +1,9 @@
-const AWS = require("aws-sdk");
-const fs = require("fs");
-const dotenv = require("dotenv");
-const minify = require("babel-minify");
-dotenv.config();
+import * as AWS from "aws-sdk";
+import * as fs from "fs";
+import * as minify from "babel-minify";
+import { config } from "dotenv";
+
+config();
 
 const creds = new AWS.Credentials({
   accessKeyId: process.env.S3AccessKeyId,
@@ -11,17 +12,18 @@ const creds = new AWS.Credentials({
 
 const S3 = new AWS.S3({ credentials: creds });
 
-const filesToUpload = ["index"];
+const filesToUpload: string[] = ["calc"];
 
-const returnPromise = (file) => {
+function returnPromise(file: string): Promise<null> {
   return new Promise((res, rej) => {
     S3.upload(
       {
-        Bucket: "ahaan-static-files",
-        Key: `simple-club/${file}.js`,
-        Body: fs.createReadStream(`${file}.js`),
+        Bucket: "flow-ninja-assets",
+        Key: `upwork/${file}.js`,
+        Body: fs.createReadStream(`upwork/${file}.js`),
         ACL: "public-read",
         ContentType: "application/javascript",
+        CacheControl: "no-cache",
       },
       (err, data) => {
         if (err) rej(err);
@@ -33,21 +35,15 @@ const returnPromise = (file) => {
       }
     );
   });
-};
+}
 
 for (const file of filesToUpload) {
-  // (async () => {
-  //   try {
-  //     await returnPromise(file);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // })();
-
   (async () => {
-    const inputCode = fs.readFileSync(`${file}.js`, { encoding: "utf8" });
+    const inputCode = fs.readFileSync(`upwork/${file}.js`, {
+      encoding: "utf8",
+    });
     const outputCode = minify(inputCode, {}).code;
-    fs.writeFileSync(`${file}.min.js`, outputCode, { encoding: "utf8" });
+    fs.writeFileSync(`upwork/${file}.min.js`, outputCode, { encoding: "utf8" });
     await returnPromise(file + ".min");
   })();
 }

@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "outDir": "./upwork",
+    "target": "ES2017",
+    "module": "CommonJS",
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "newLine": "lf"
+  },
+  "include": ["upwork/src/*"],
+  "exclude": ["node_modules"]
+}
