@@ -16,6 +16,9 @@ window.addEventListener("load", () => {
 
 function onSuccess() {
   setTimeout(() => {
+    if (!(grecaptcha && grecaptcha.getResponse()))
+      return alert("Please verify that you are not a robot!");
+
     const formParent = document.getElementById(
       "wf-form-Lead-Gen-Form"
     ).parentElement;

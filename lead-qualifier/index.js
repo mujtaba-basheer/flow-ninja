@@ -225,7 +225,7 @@ class LocalStorage {
         break;
       }
       case "Both": {
-        if (i.length === 11) business_complexity = "Complex";
+        if (i.length > 0) business_complexity = "Complex";
         break;
       }
     }
@@ -337,55 +337,55 @@ class LocalStorage {
         type_name: "NEW KID",
         img_src:
           "https://uploads-ssl.webflow.com/61e5a19a1262b42867b82528/62209ebeac7b7e11fd5d6b76_New%20Kid.svg",
-        gen_txt: `New kids need to build their brand, while they are still finding product market fit. Therefore branding needs to stick to a minimum, in order to stay flexibel.`,
+        gen_txt: `New kids need to build their brand, while finding a product market fit. Therefore, branding needs to be kept at a minimum, in order to stay flexible.`,
         desc_txt: {
-          Hard: `From a marketing perspective the marktet seems to be rather hard, which means that, branding will play an important role to withstand the competition.`,
-          Easy: `From a marketing perspective the market seems to be rather kind, which means, that you have the chance to become a category defining brand.`,
-          Medium: `From a marketing perspective the marktet seems to be not easy, which means that you have to differentiate yourself also on a brand level.`,
+          Hard: `From a strategic perspective the market seems to be challenging. Branding will therefore play a vital role in withstanding the competition.`,
+          Easy: `From a strategic perspective the market seems to be rather kind, which means that you have the chance to become a category-defining brand.`,
+          Medium: `From a strategic perspective the market seems to be challenging, which is why you should also differentiate yourself on a brand level.`,
         },
       },
       {
         type_name: "TRENDSETTER",
         img_src:
           "https://uploads-ssl.webflow.com/61e5a19a1262b42867b82528/62209ebe495e4d8783021732_Trendsetter.svg",
-        gen_txt: `Trendsetters are already confident with their product, but still struggle in climbing up the hype cycle. Creative marketing can give a boost for this.`,
+        gen_txt: `Trendsetters are already confident with their product, but struggle to leave an impression. Creative marketing is the ideal boost.`,
         desc_txt: {
-          Hard: `From a marketing perspective the marktet seems to be rather hard, which means that, branding will play an important role to become and/or stay one of the leading players.`,
-          Easy: `From a marketing perspective the market seems to be rather kind, which means, that you still have the chance to become a category defining brand.`,
-          Medium: `From a marketing perspective the marktet seems to be not easy, which means that you have to differentiate yourself more than before on a brand level.`,
+          Hard: `From a strategic perspective the market seems to be challenging, which means that branding will play a vital role to become and/or stay one of the leading players.`,
+          Easy: `From a strategic perspective the market is rather kind, which means that you still have the chance to become a category-defining brand.`,
+          Medium: `From a strategic perspective the market seems to be challenging, which means that you have to differentiate yourself more than usual on a brand level.`,
         },
       },
       {
         type_name: "SMART ASS",
         img_src:
           "https://uploads-ssl.webflow.com/61e5a19a1262b42867b82528/62209ebee08cc4ea7125cd1e_Smart%20Ass.svg",
-        gen_txt: `Smart asses found a market, that they can win. The problem often lies in finding the right selling story and measures, that effectivly adress decision makers.`,
+        gen_txt: `Smart asses found a market that they can win. The problem often lies in finding the right story and measures that effectively address decision makers.`,
         desc_txt: {
-          Hard: `The market seems to be very difficult from a marketing perspective, therefore branding will play a vital in withstanding the competition.`,
-          Easy: `From a marketing perspective the market seems to be rather kind, which means, that you have the chance to become a category defining brand.`,
-          Medium: `From a marketing perspective the marktet seems to be not easy, which means that you have to differentiate yourself also on a brand level.`,
+          Hard: `From a strategic perspective the market seems to be challenging. Branding will therefore play a vital role in withstanding the competition.`,
+          Easy: `From a strategic perspective the market is rather kind, which means that you still have the chance to become a category-defining brand.`,
+          Medium: `From a strategic perspective the market seems to be challenging, which means that you have to differentiate yourself more than usual on a brand level.`,
         },
       },
       {
         type_name: "KICK ASS",
         img_src:
           "https://uploads-ssl.webflow.com/61e5a19a1262b42867b82528/62209ebee37c739d71334e83_Kick%20Ass.svg",
-        gen_txt: `Kick asses are already very successful. They have product that nearly sells by it self. Nearly. In order to grow through the glass sealing a strong brand can help.`,
+        gen_txt: `Kick asses are already very successful. They have a product that sells itself. Nearly. In order to grow and break through the glass ceiling, a strong brand will help.`,
         desc_txt: {
-          Hard: `From a marketing perspective the marktet seems to be rather hard, which means that, branding will play an important role to become and/or stay one of the leading players`,
-          Easy: `From a marketing perspective the market seems to be rather kind, which means, that you still have the chance to become a category defining brand.`,
-          Medium: `From a marketing perspective the marktet seems to be not easy, which means that you have to differentiate yourself more then before on a brand level.`,
+          Hard: `From a strategic perspective the market seems to be challenging, which means that branding will play a vital role to become and/or stay one of the leading players.`,
+          Easy: `From a strategic perspective the market is rather kind, which means that you still have the chance to become a category-defining brand.`,
+          Medium: `From a strategic perspective the market seems to be challenging, which means that you have to differentiate yourself more than usual on a brand level.`,
         },
       },
       {
         type_name: "HYBRID",
         img_src:
           "https://uploads-ssl.webflow.com/61e5a19a1262b42867b82528/62209eb524c0603f48ccca5a_Hybrid.svg",
-        gen_txt: `Hybrids have found a comlpex business model, that means very different things for each of the stakeholders. When telling different stories at the same time, brand provides the common ground, that keeps it all together.`,
+        gen_txt: `Hybrids have a complex business model. This means they have to tell numerous stories simultaneously, to different stakeholder. This can be confusing. A strong brand can provide common ground for a holistic approach.`,
         desc_txt: {
-          Hard: `From a marketing perspective the marktet seems to be rather hard, which means that, branding will play an important role to become and/or stay one of the leading players.`,
-          Easy: `From a marketing perspective the market seems to be rather kind, which means, that becoming a category defining brand should be your objective now.`,
-          Medium: `From a marketing perspective the marktet seems to be not easy, which means that you have to differentiate yourself also through branding, in order to convince your heterogenous audience.`,
+          Hard: `From a strategic perspective the market seems to be challenging, which means that branding will play a vital role to become and/or stay one of the leading players.`,
+          Easy: `From a strategic perspective the market is rather kind, which means that becoming a category-defining brand should be your objective now.`,
+          Medium: `From a strategic perspective the market seems to be challenging, which means that you have to differentiate yourself more than usual on a brand level in order to convince your heterogenous audience.`,
         },
       },
     ];
@@ -425,7 +425,7 @@ class LocalStorage {
         break;
       }
       case "Partially": {
-        if (f === "< 50k" || f === "50-100k") {
+        if (f === ">100k" || f === "50-100k") {
           modules.add(1);
           modules.add(5);
           modules.add(6);

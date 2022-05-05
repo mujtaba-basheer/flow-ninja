@@ -3,10 +3,24 @@ const formId = "wf-form-Contact-Form";
 const fillHiddenFields = (data) => {
   const ids = [
     "COMPANYNAME",
-    "COMPANYACTIVITY",
     "COMPANYFOUNDINGYEAR",
+    "COMPANYACTIVITY",
+    "COMPANYPHASE",
+    "BRANDPEOPLE",
+    "MARKETINGBUDGET",
+    "MEDIABUDGET",
+    "BRANDADDRESS",
+    "MARKETSIZE",
+    "COMPANYSTATUS",
     "COMPANYDIGITAL",
     "COMPANYPRODUCT",
+    "BRANDDESIGN",
+    "DESIGNSUPPORT",
+    "BRANDSTRATEGY",
+    "STRATEGYSUPPORT",
+    "MARKETINGPERF",
+    "BRANDMARKETING",
+    "MARKETINGSUPPORT",
   ];
 
   for (let i = 0; i < ids.length; i++) {
@@ -95,9 +109,31 @@ window.addEventListener("load", () => {
 
   const ls = new LocalStorage();
   const { form_data } = ls;
-  const { a, b, c, l, m } = form_data;
+  const { a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t } =
+    form_data;
   fillModules(form_data.selected_modules);
-  fillHiddenFields([a, c, b, l, m.length > 0 ? m.join(", ") : "none"]);
+  fillHiddenFields([
+    a,
+    b,
+    c,
+    d,
+    e,
+    f,
+    g,
+    h,
+    // i,
+    j,
+    k,
+    l,
+    m.length > 0 ? m.join(", ") : "none",
+    n,
+    o,
+    p,
+    q,
+    r,
+    s,
+    t,
+  ]);
 
   formEl.addEventListener("submit", (ev) => {
     ev.preventDefault();

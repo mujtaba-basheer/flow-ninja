@@ -50,6 +50,32 @@
       $('select').niceSelect()
     });
   </script>
+  <script>
+    const delay = (t) => new Promise((res, rej) => {
+      setTimeout(res, t);
+    });
+    const addToDataLayer = () => {
+      MemberStack.onReady.then(function (member) {
+        if (member.loggedIn) {
+          window.dataLayer = window.dataLayer || [];
+          MemberStack.onReady.then(function (member) {
+            window.dataLayer.push({
+              event: 'login-form-test',
+              formType: 'log-in form',
+              'user-id': member.id,
+            });
+          });
+        }
+      });
+    };
+    window.addEventListener('load', async () => {
+      do {
+        await delay(1000);
+        addToDataLayer();
+      }
+      while (!window.MemberStack);
+    });
+  </script>
 </body>
 
 </html>
