@@ -19,8 +19,8 @@ function returnPromise(file: string): Promise<null> {
     S3.upload(
       {
         Bucket: "flow-ninja-assets",
-        Key: `upwork/${file}.js`,
-        Body: fs.createReadStream(`upwork/${file}.js`),
+        Key: `ninja-script/${file}.js`,
+        Body: fs.createReadStream(`ninja-script/${file}.js`),
         ACL: "public-read",
         ContentType: "application/javascript",
         CacheControl: "no-cache",
@@ -39,11 +39,13 @@ function returnPromise(file: string): Promise<null> {
 
 for (const file of filesToUpload) {
   (async () => {
-    const inputCode = fs.readFileSync(`upwork/${file}.js`, {
+    const inputCode = fs.readFileSync(`ninja-script/${file}.js`, {
       encoding: "utf8",
     });
     const outputCode = minify(inputCode, {}).code;
-    fs.writeFileSync(`upwork/${file}.min.js`, outputCode, { encoding: "utf8" });
+    fs.writeFileSync(`ninja-script/${file}.min.js`, outputCode, {
+      encoding: "utf8",
+    });
     await returnPromise(file + ".min");
   })();
 }

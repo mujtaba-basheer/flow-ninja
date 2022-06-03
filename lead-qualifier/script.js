@@ -642,4 +642,5 @@ ls.setBusinessDifficulty();
 ls.setTypology();
 ls.setModules();
 
-console.log(ls.results);
+console.log(JSON.stringify(ls.results));
+console.log(JSON.stringify(ls.form_data));

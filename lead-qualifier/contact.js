@@ -1,26 +1,28 @@
-const formId = "wf-form-Contact-Form";
+const formId = "wf-form-Result-Form";
 
 const fillHiddenFields = (data) => {
   const ids = [
     "COMPANYNAME",
-    "COMPANYFOUNDINGYEAR",
-    "COMPANYACTIVITY",
-    "COMPANYPHASE",
-    "BRANDPEOPLE",
+    "FOUNDED",
+    "PRODUCTDESCRIPTION",
+    "CURRENTSTAGE",
+    "MARKETINGPEOPLE",
     "MARKETINGBUDGET",
     "MEDIABUDGET",
-    "BRANDADDRESS",
+    "TARGETGROUP",
+    "KEYSTAKEHOLDER",
     "MARKETSIZE",
-    "COMPANYSTATUS",
-    "COMPANYDIGITAL",
-    "COMPANYPRODUCT",
-    "BRANDDESIGN",
+    "COMPETITIONSTATUS",
+    "HOWDIGITAL",
+    "COMPANYUSPS",
+    "STATUSDESIGN",
     "DESIGNSUPPORT",
-    "BRANDSTRATEGY",
+    "STATUSSTRATEGY",
     "STRATEGYSUPPORT",
-    "MARKETINGPERF",
+    "PERFORMANCEMARKETING",
     "BRANDMARKETING",
     "MARKETINGSUPPORT",
+    "ARCHETYPE",
   ];
 
   for (let i = 0; i < ids.length; i++) {
@@ -31,6 +33,12 @@ const fillHiddenFields = (data) => {
       fieldEl.value = data[i];
     }
   }
+};
+
+const difficultyMap = {
+  Easy: "S",
+  Medium: "M",
+  Hard: "L",
 };
 
 const fillModules = (selectedModules = []) => {
@@ -76,26 +84,26 @@ const fillModules = (selectedModules = []) => {
     "Paid Media",
   ];
   const data = {
-    "brand-design": [],
-    "brand-strategy": [],
-    "brand-content": [],
-    "3rd-party-services": [],
-    "consulting-services": [],
-    "brand-activation": [],
-    "extended-jvm-services": [],
+    BRANDDESIGN: [],
+    BRANDSTRATEGY: [],
+    BRANDCONTENT: [],
+    THIRDPARTYSERVICES: [],
+    CONSULTINGSERVICES: [],
+    BRANDACTIVATION: [],
+    EXTENDEDJVMSERVICES: [],
   };
 
   for (const module of [...selectedModules]) {
-    if (module <= 7) data["brand-design"].push(modulesArray[module]);
-    else if (module <= 14) data["brand-strategy"].push(modulesArray[module]);
-    else if (module <= 19) data["brand-content"].push(modulesArray[module]);
+    if (module <= 7) data["BRANDDESIGN"].push(modulesArray[module]);
+    else if (module <= 14) data["BRANDSTRATEGY"].push(modulesArray[module]);
+    else if (module <= 19) data["BRANDCONTENT"].push(modulesArray[module]);
     else if (module <= 23)
-      data["3rd-party-services"].push(modulesArray[module]);
+      data["THIRDPARTYSERVICES"].push(modulesArray[module]);
     else if (module <= 26)
-      data["consulting-services"].push(modulesArray[module]);
-    else if (module <= 33) data["brand-activation"].push(modulesArray[module]);
+      data["CONSULTINGSERVICES"].push(modulesArray[module]);
+    else if (module <= 33) data["BRANDACTIVATION"].push(modulesArray[module]);
     else if (module <= 38)
-      data["extended-jvm-services"].push(modulesArray[module]);
+      data["EXTENDEDJVMSERVICES"].push(modulesArray[module]);
   }
 
   for (const key of Object.keys(data)) {
@@ -108,7 +116,15 @@ window.addEventListener("load", () => {
   const formEl = document.getElementById(formId);
 
   const ls = new LocalStorage();
-  const { form_data } = ls;
+  const {
+    form_data,
+    results: {
+      typology: {
+        type: { type_name },
+      },
+      business_difficulty,
+    },
+  } = ls;
   const { a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t } =
     form_data;
   fillModules(form_data.selected_modules);
@@ -121,7 +137,7 @@ window.addEventListener("load", () => {
     f,
     g,
     h,
-    // i,
+    i.length > 0 ? i.join(", ") : "none",
     j,
     k,
     l,
@@ -133,6 +149,7 @@ window.addEventListener("load", () => {
     r,
     s,
     t,
+    `${type_name}, ${difficultyMap[business_difficulty]}`,
   ]);
 
   formEl.addEventListener("submit", (ev) => {
