@@ -2,3 +2,4 @@
 /node_modules
 *.mp4
 tsconfig.json
+package-lock.json
