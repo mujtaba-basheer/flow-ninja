@@ -144,18 +144,39 @@ window.addEventListener("load", (ev: any) => {
     new Swiper(swiper_element, swiper_props);
   });
 
-  // applying css styles
-  document.styleSheets[0].insertRule(
-    `.scroll-box[hide-scrollbar="true"]::-webkit-scrollbar {
-    display: none;
-  }`,
-    0
-  );
-  document.styleSheets[0].insertRule(
-    `.scroll-box[hide-scrollbar="true"] {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }`,
-    0
-  );
+  let ssIndex = 0;
+  while (true) {
+    if (ssIndex === document.styleSheets.length) break;
+
+    try {
+      // applying smooth scrolling
+      document.styleSheets[ssIndex].insertRule(
+        `div[ninja-swiper="enabled"] div.flowninja-swiper-wrapper[swiper-smooth= "true"] {
+        -webkit-transition-timing-function:linear!important;
+        -o-transition-timing-function:linear!important;
+        transition-timing-function:linear!important;
+      }`,
+        0
+      );
+
+      // applying css styles
+      document.styleSheets[ssIndex].insertRule(
+        `.scroll-box[hide-scrollbar="true"]::-webkit-scrollbar {
+        display: none;
+      }`,
+        0
+      );
+      document.styleSheets[ssIndex].insertRule(
+        `.scroll-box[hide-scrollbar="true"] {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }`,
+        0
+      );
+
+      break;
+    } catch (error) {
+      ssIndex++;
+    }
+  }
 });

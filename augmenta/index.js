@@ -1824,7 +1824,7 @@ const instantiateCropBlock = (cropEl, cropGrid) => {
 const sendMail = (mailData) => {
   $("input.roi-btn").attr("value", "Please Wait...");
   return new Promise((res, rej) => {
-    fetch("https://hook.integromat.com/l586cba2644k7nxe3epehibptxjlyt6k", {
+    fetch("https://hook.eu1.make.com/htjw2twkesysg78bedcvz8yy8yn6a257", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(mailData),
@@ -2550,8 +2550,9 @@ const calc = async () => {
 
   try {
     await sendMail(mailData);
+    console.log("called: sendMail()");
     $("input.roi-btn").attr("value", "Redirecting to Result Page...");
-    setTimeout(() => (window.location.pathname = "/thank-you-page"), 500);
+    // setTimeout(() => (window.location.pathname = "/thank-you-page"), 500);
   } catch (error) {
     $("input.roi-btn").attr("value", "Get your ROI");
   }

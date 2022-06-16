@@ -11,7 +11,7 @@ const creds = new AWS.Credentials({
 
 const S3 = new AWS.S3({ credentials: creds });
 
-const filesToUpload = ["index.v2"];
+const filesToUpload = ["index.v3"];
 
 const returnPromise = (file) => {
   return new Promise((res, rej) => {

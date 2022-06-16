@@ -10,13 +10,13 @@ const creds = new AWS.Credentials({
     secretAccessKey: process.env.S3SecretAccessKey,
 });
 const S3 = new AWS.S3({ credentials: creds });
-const filesToUpload = ["cpm"];
+const filesToUpload = ["slider"];
 function returnPromise(file) {
     return new Promise((res, rej) => {
         S3.upload({
             Bucket: "flow-ninja-assets",
-            Key: `upwork/${file}.js`,
-            Body: fs.createReadStream(`upwork/${file}.js`),
+            Key: `fraction/${file}.js`,
+            Body: fs.createReadStream(`fraction/${file}.js`),
             ACL: "public-read",
             ContentType: "application/javascript",
             CacheControl: "no-cache",
@@ -33,11 +33,13 @@ function returnPromise(file) {
 }
 for (const file of filesToUpload) {
     (async () => {
-        const inputCode = fs.readFileSync(`upwork/${file}.js`, {
+        const inputCode = fs.readFileSync(`fraction/${file}.js`, {
             encoding: "utf8",
         });
         const outputCode = minify(inputCode, {}).code;
-        fs.writeFileSync(`upwork/${file}.min.js`, outputCode, { encoding: "utf8" });
+        fs.writeFileSync(`fraction/${file}.min.js`, outputCode, {
+            encoding: "utf8",
+        });
         await returnPromise(file + ".min");
     })();
 }
