@@ -14,7 +14,7 @@ const nftdInd1 = Intl.NumberFormat("en-IN", {
 
 const getNum = (el, def) => {
   const val = el.val();
-  if (val === "") return def;
+  if (val === "") return 0;
   else if (val === "0") return 0;
   else return Number(val);
 };
@@ -103,13 +103,13 @@ const updateSavingsChart = ({
 
   $("#savings-pie-chart").css(
     "background-image",
-    `conic-gradient(white ${x}deg, #F4CECE 0 ${y}deg, #C69999 0)`
+    `conic-gradient(#f2ecff ${x}deg, #b39cf7 0 ${y}deg, #625be1 0)`
   );
 
   [x, y] = percents;
   $("span.phone-tag").text(x);
-  $("span.Abandoned-Calls").text(y);
-  $("span.appointment-No-Shows").text(Math.round(100 - x - y));
+  $("span.abandoned-calls").text(y);
+  $("span.appointment-no-shows").text(Math.round(100 - x - y));
 };
 
 const updateRoiChart = ({ net_profit, total_cost }) => {
@@ -126,24 +126,24 @@ const updateRoiChart = ({ net_profit, total_cost }) => {
   $(".first-year-savings").text("$" + nftd.format(net_profit));
 };
 
-let percent_phone_tag_savings = 0.75,
-  percent_abandoned_calls_savings = 0.3,
-  percent_no_show_savings = 0.35;
+let percent_phone_tag_savings = 0,
+  percent_abandoned_calls_savings = 0,
+  percent_no_show_savings = 0;
 
-let outbound_calls_per_day = 400,
-  calls_connected = 0.3,
-  inbound_calls_per_day = 400,
-  calls_abandoned = 0.1,
-  appts_per_day = 200,
-  no_shows = 0.2;
+let outbound_calls_per_day = null,
+  calls_connected = null,
+  inbound_calls_per_day = null,
+  calls_abandoned = null,
+  appts_per_day = null,
+  no_shows = null;
 
-let phone_tag_cost = 50400,
-  abandoned_calls_cost = 504000,
-  no_show_cost = 1440000,
-  time_per_call = 3,
-  hourly_wage_calling = 15,
-  percent_calls_scheduling = 0.1,
-  rev_per_appt = 150;
+let phone_tag_cost = null,
+  abandoned_calls_cost = null,
+  no_show_cost = null,
+  time_per_call = null,
+  hourly_wage_calling = null,
+  percent_calls_scheduling = null,
+  rev_per_appt = null;
 
 const showTotalSavings = ({
   phone_tag_cost,
@@ -225,31 +225,6 @@ const downloadPdf = async () => {
     return intInd.format(num);
   };
 
-  const outbound_calls_per_day = getData("Calls-Make-Per-Day", 400);
-  const percent_of_connected_calls = getData("Speaking-With-Patient", 30) / 100;
-  const inbound_calls_per_day = getData("Calls-Receive-Per-Day", 400);
-  const percent_of_calls_abandoned = getData("Abandoned-Calls", 10) / 100;
-  const appointments_per_day = getData("Patients-Seen-Each-Day", 200);
-  const percent_of_noshows = getData("No-Shows", 20) / 100;
-
-  const phone_tag_cost = calculatePhoneTagCost(
-    outbound_calls_per_day,
-    percent_of_connected_calls,
-    time_per_call,
-    hourly_wage_calling
-  );
-  const abandoned_calls_cost = calculateAbandonedCallsCost(
-    inbound_calls_per_day,
-    percent_of_calls_abandoned,
-    percent_calls_scheduling,
-    rev_per_appt
-  );
-  const no_show_cost = calculateNoShowCost(
-    appointments_per_day,
-    percent_of_noshows,
-    rev_per_appt
-  );
-
   let phone_tag_savings = phone_tag_cost * percent_phone_tag_savings;
   let abandoned_calls_savings =
     abandoned_calls_cost * percent_abandoned_calls_savings;
@@ -263,21 +238,31 @@ const downloadPdf = async () => {
   const percent_roi_3 = Math.round(percent_roi * 100);
 
   const postData = {
+    no_of_providers: formatInd(no_of_providers),
     outbound_calls_per_day: formatInd(outbound_calls_per_day),
-    percent_of_connected_calls: formatInd(percent_of_connected_calls),
+    percent_of_connected_calls: formatInd(calls_connected * 100) + "%",
+    average_call_length: `${formatInd(time_per_call)} min`,
+    hourly_staff_wage: `$${formatNum(hourly_wage_calling)}`,
     inbound_calls_per_day: formatInd(inbound_calls_per_day),
-    percent_of_calls_abandoned: formatInd(percent_of_calls_abandoned),
-    appointments_per_day: formatInd(appointments_per_day),
-    percent_of_noshows: formatInd(percent_of_noshows),
-    phone_tag_cost: formatNum(phone_tag_cost),
-    abandoned_calls_cost: formatNum(abandoned_calls_cost),
-    no_show_cost: formatNum(no_show_cost),
-    total_savings_per_year: formatNum(total_savings_per_year),
-    net_profit_first: formatNum(net_profit_first),
+    percent_of_calls_abandoned: formatInd(calls_abandoned * 100) + "%",
+    percent_of_scheduling_calls:
+      formatInd(percent_calls_scheduling * 100) + "%",
+    appointments_per_day: formatInd(appts_per_day),
+    percent_of_noshows: formatInd(no_shows * 100) + "%",
+    avg_appt_rev: `$${formatNum(rev_per_appt)}`,
+    phone_tag_cost: `$${formatNum(phone_tag_cost)}`,
+    abandoned_calls_cost: `$${formatNum(abandoned_calls_cost)}`,
+    no_show_cost: `$${formatNum(no_show_cost)}`,
+    phone_tag_reduction: formatInd(percent_phone_tag_savings * 100) + "%",
+    abandoned_call_reduction:
+      formatInd(percent_abandoned_calls_savings * 100) + "%",
+    no_show_reduction: formatInd(percent_no_show_savings * 100) + "%",
+    total_savings_per_year: `$${formatNum(total_savings_per_year)}`,
+    net_profit_first: `$${formatNum(net_profit_first)}`,
     percent_roi: formatInd(percent_roi_3) + "%",
   };
 
-  $("#roi-repport-download div.klara-button-text").text("Generating PDF...");
+  $("#roi-repport-download div:not(:first-child)").text("Generating PDF...");
   const bodyData = JSON.stringify({
     data: postData,
     logo: false,
@@ -302,7 +287,7 @@ const downloadPdf = async () => {
       })
         .then((res) => res.blob())
         .then(async (file) => {
-          $("#roi-repport-download div.klara-button-text").text(
+          $("#roi-repport-download div:not(:first-child)").text(
             "Download Results"
           );
 
@@ -314,6 +299,9 @@ const downloadPdf = async () => {
           downloadEl.style.display = "none";
           document.body.appendChild(downloadEl);
           downloadEl.click();
+
+          $("#third-progress-dot").addClass("show-icon");
+          $("#third-done-icon").addClass("show");
 
           try {
             const deleteApiCall = await fetch(
@@ -331,20 +319,22 @@ const downloadPdf = async () => {
         })
         .catch((err) => {
           console.error(err);
-          $("#roi-repport-download div.klara-button-text").text(
+          $("#roi-repport-download div:not(:first-child)").text(
             "Download Results"
           );
         });
     })
     .catch((err) => {
       console.error(err);
-      $("#roi-repport-download div.klara-button-text").text("Download Results");
+      $("#roi-repport-download div:not(:first-child)").text("Download Results");
     });
 };
 
 window.addEventListener("load", function () {
-  let flag = false;
-  let formSubmitted = false;
+  {
+    // Higlighting first progress dot
+    $("#first-progress-dot").removeClass("disabled-progress-bar");
+  }
 
   {
     // passing UTM params
@@ -367,8 +357,9 @@ window.addEventListener("load", function () {
     providersInput.on("input", function () {
       const providers = $(this).val();
 
-      if (providers && !isNaN(Number(providers))) goBtn.removeClass("disabled");
-      else goBtn.addClass("disabled");
+      if (providers && !isNaN(Number(providers)))
+        goBtn.removeClass("disabled-button");
+      else goBtn.addClass("disabled-button");
     });
 
     goBtn.on("click", function () {
@@ -377,35 +368,42 @@ window.addEventListener("load", function () {
       $("#progress-bar-top")
         .removeClass("hidden")
         .removeClass("box-shadow-white");
-      $("#forms-calculator").removeClass("hidden");
+      $("#Card-Section").removeClass("hidden");
       $("#first-progress-dot").removeClass("disabled-progress-bar");
     });
   }
 
   const showRoiBtn = $("#see-your-roi");
   const checkRoiBtn = () => {
-    let flags = [true, true, true];
+    let flag = true;
     const inputValsArr = [
-      [$("#Calls-Make-Per-Day").val(), $("#Speaking-With-Patient").val()],
-      [$("#Calls-Receive-Per-Day").val(), $("#Abandoned-Calls").val()],
-      [$("#Patients-Seen-Each-Day").val(), $("#No-Shows").val()],
+      $("#Calls-Make-Per-Day").val(),
+      $("#Speaking-With-Patient").val(),
+      $("#Calls-Receive-Per-Day").val(),
+      $("#Abandoned-Calls").val(),
+      $("#Patients-Seen-Each-Day").val(),
+      $("#No-Shows").val(),
+      $("#Avg-Time-Per-Call").val(),
+      $("#hourlyWage").val(),
+      $("#Percentage-Scheduling").val(),
+      $("#revenue").val(),
     ];
 
     for (let i = 0; i < inputValsArr.length; i++) {
-      const inputVals = inputValsArr[i];
-      for (const inputVal of inputVals) {
-        if (inputVal === "" || inputVal === "0") {
-          flags[i] = false;
-          break;
-        }
+      const inputVal = inputValsArr[i];
+      if (inputVal === "" || inputVal === "0") {
+        flag = false;
+        break;
       }
     }
-
-    const flag = flags[0] || flags[1] || flags[2];
 
     if (flag) showRoiBtn.removeClass("disabled-button");
     else showRoiBtn.addClass("disabled-button");
   };
+
+  showRoiBtn.on("click", function () {
+    $("#sliderSection").removeClass("hidden");
+  });
 
   {
     // ROI CALCULATOR CODE
@@ -414,11 +412,10 @@ window.addEventListener("load", function () {
       $("#roi-repport-download").on("click", function (ev) {
         ev.preventDefault();
 
-        // $("#second-progress-dot").addClass("show-icon");
-        // $("#second-done-icon").addClass("show");
-        // $("#progres-line").addClass("completed-line");
-        // $("#third-progress-dot").addClass("show-icon");
-        // $("#third-done-icon").addClass("show");
+        $("#second-progress-dot").addClass("show-icon");
+        $("#second-done-icon").addClass("show");
+        $("#progres-line").addClass("completed-line");
+        $("#third-progress-dot").removeClass("disabled-progress-bar");
 
         downloadPdf();
       });
@@ -445,9 +442,7 @@ window.addEventListener("load", function () {
         if (res !== false) {
           res = Math.round(res);
           phone_tag_cost = res;
-          $("#phone-tag-cost").html("$" + nftd.format(res));
           $("#costOfPhone").html("$" + nftd.format(res));
-          $("#phone-tag-cost").addClass("gray-900");
           $("#result-div1").removeClass("border-grey-500");
           checkRoiBtn();
           $("#card-result-1").removeClass("hidden");
@@ -460,7 +455,6 @@ window.addEventListener("load", function () {
             no_show_cost,
           });
         } else {
-          $("#phone-tag-cost").text("NA");
           $("#costOfPhone").text("NA");
         }
       };
@@ -504,9 +498,7 @@ window.addEventListener("load", function () {
         if (res !== false) {
           res = Math.round(res);
           abandoned_calls_cost = res;
-          $("#abandoned-call-cost").html("$" + nftd.format(res));
           $("#CostAbandoned").html("$" + nftd.format(res));
-          $("#abandoned-call-cost").addClass("gray-900");
           $("#result-div2").removeClass("border-grey-500");
           checkRoiBtn();
           $("#clear-button-2").removeClass("disaled");
@@ -520,7 +512,6 @@ window.addEventListener("load", function () {
             no_show_cost,
           });
         } else {
-          $("#abandoned-call-cost").text("NA");
           $("#CostAbandoned").text("NA");
         }
       };
@@ -560,9 +551,7 @@ window.addEventListener("load", function () {
         if (res !== false) {
           res = Math.round(res);
           no_show_cost = res;
-          $("#no-show-cost").html("$" + nftd.format(res));
           $("#costNoShows").html("$" + nftd.format(res));
-          $("#no-show-cost").addClass("gray-900");
           $("#result-div3").removeClass("border-grey-500");
           checkRoiBtn();
           $("#clear-button-3").removeClass("disaled");
@@ -576,7 +565,6 @@ window.addEventListener("load", function () {
             no_show_cost,
           });
         } else {
-          $("#no-show-cost").text("NA");
           $("#costNoShows").text("NA");
         }
       };
@@ -634,6 +622,12 @@ window.addEventListener("load", function () {
 
     $("#savingsButton").on("click", function () {
       $("#charts-section").removeClass("hidden");
+      $("#roi-footer").removeClass("hidden");
+
+      $("#first-progress-dot").addClass("show-icon");
+      $("#first-done-icon").addClass("show");
+      $("#progres-line").addClass("half-full");
+      $("#second-progress-dot").removeClass("disabled-progress-bar");
     });
   }
 
