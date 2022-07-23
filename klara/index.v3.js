@@ -113,6 +113,7 @@ const updateSavingsChart = ({
 };
 
 const updateRoiChart = ({ net_profit, total_cost }) => {
+  console.log({ net_profit, total_cost });
   let firstRoiHeight = 100,
     firstInvHeight = 100;
   if (total_cost > net_profit) {
@@ -126,6 +127,9 @@ const updateRoiChart = ({ net_profit, total_cost }) => {
   $(".first-year-savings").text("$" + nftd.format(net_profit));
 };
 
+let no_of_providers = null,
+  rev_per_appt = null;
+
 let percent_phone_tag_savings = 0,
   percent_abandoned_calls_savings = 0,
   percent_no_show_savings = 0;
@@ -134,6 +138,7 @@ let outbound_calls_per_day = null,
   calls_connected = null,
   inbound_calls_per_day = null,
   calls_abandoned = null,
+  percent_calls_scheduling = null,
   appts_per_day = null,
   no_shows = null;
 
@@ -141,9 +146,7 @@ let phone_tag_cost = null,
   abandoned_calls_cost = null,
   no_show_cost = null,
   time_per_call = null,
-  hourly_wage_calling = null,
-  percent_calls_scheduling = null,
-  rev_per_appt = null;
+  hourly_wage_calling = null;
 
 const showTotalSavings = ({
   phone_tag_cost,
@@ -153,9 +156,7 @@ const showTotalSavings = ({
   $("#Charts").removeClass("opacity-30");
 
   const klara_monthly_charge = 200;
-  const noOfProviders =
-    ($("#Providers").val() && Number($("#Providers").val())) || 20;
-  if (isNaN(Number(noOfProviders))) return;
+  if (isNaN(Number(no_of_providers))) return;
 
   // const total_cost = phone_tag_cost + abandoned_calls_cost + no_show_cost;
   const phone_tag_savings = phone_tag_cost * percent_phone_tag_savings;
@@ -164,7 +165,7 @@ const showTotalSavings = ({
   const no_show_savings = no_show_cost * percent_no_show_savings;
   const total_savings =
     phone_tag_savings + abandoned_calls_savings + no_show_savings;
-  const total_cost = klara_monthly_charge * 12 * noOfProviders;
+  const total_cost = klara_monthly_charge * 12 * no_of_providers;
   const net_profit = total_savings - total_cost;
   let roi_percent = total_savings / total_cost;
   let roi_percent_3 = Math.round(roi_percent * 100);
@@ -186,6 +187,117 @@ const showTotalSavings = ({
     net_profit,
     total_cost,
   });
+};
+
+const updatePhoneTagCost = () => {
+  let res = calculatePhoneTagCost(
+    outbound_calls_per_day,
+    calls_connected,
+    time_per_call,
+    hourly_wage_calling
+  );
+  if (res !== false) {
+    res = Math.round(res);
+    phone_tag_cost = res;
+    $("#costOfPhone").html("$" + nftd.format(res));
+    $("#result-div1").removeClass("border-grey-500");
+    checkRoiBtn();
+    $("#card-result-1").removeClass("hidden");
+    if (outbound_calls_per_day !== 0 || calls_connected !== 0)
+      $("#clear-button-1").removeClass("disabled");
+    else $("#clear-button-1").addClass("disabled");
+    showTotalSavings({
+      phone_tag_cost,
+      abandoned_calls_cost,
+      no_show_cost,
+    });
+  } else {
+    $("#costOfPhone").text("NA");
+  }
+};
+
+const updateAbandonedCallsCost = () => {
+  let res = calculateAbandonedCallsCost(
+    inbound_calls_per_day,
+    calls_abandoned,
+    percent_calls_scheduling,
+    rev_per_appt
+  );
+  if (res !== false) {
+    res = Math.round(res);
+    abandoned_calls_cost = res;
+    $("#CostAbandoned").html("$" + nftd.format(res));
+    $("#result-div2").removeClass("border-grey-500");
+    checkRoiBtn();
+    $("#clear-button-2").removeClass("disaled");
+    $("#card-result-2").removeClass("hidden");
+    if (inbound_calls_per_day || calls_abandoned)
+      $("#clear-button-2").removeClass("disabled");
+    else $("#clear-button-2").addClass("disabled");
+    showTotalSavings({
+      phone_tag_cost,
+      abandoned_calls_cost,
+      no_show_cost,
+    });
+  } else {
+    $("#CostAbandoned").text("NA");
+  }
+};
+
+const updateNoShowCost = () => {
+  let res = calculateNoShowCost(appts_per_day, no_shows, rev_per_appt);
+  if (res !== false) {
+    res = Math.round(res);
+    no_show_cost = res;
+    $("#costNoShows").html("$" + nftd.format(res));
+    $("#result-div3").removeClass("border-grey-500");
+    checkRoiBtn();
+    $("#clear-button-3").removeClass("disaled");
+    $("#card-result-3").removeClass("hidden");
+    if (appts_per_day || no_shows) $("#clear-button-3").removeClass("disabled");
+    else $("#clear-button-3").addClass("disabled");
+    showTotalSavings({
+      phone_tag_cost,
+      abandoned_calls_cost,
+      no_show_cost,
+    });
+  } else {
+    $("#costNoShows").text("NA");
+  }
+};
+
+const checkRoiBtn = () => {
+  let flags = [true, true, true];
+  const inputValsArr = [
+    [
+      $("#Calls-Make-Per-Day").val(),
+      $("#Speaking-With-Patient").val(),
+      $("#Avg-Time-Per-Call").val(),
+      $("#hourlyWage").val(),
+    ],
+
+    [
+      $("#Calls-Receive-Per-Day").val(),
+      $("#Calls-Receive-Per-Day").val(),
+      $("#Percentage-Scheduling").val(),
+    ],
+    [$("#Patients-Seen-Each-Day").val(), $("#No-Shows").val()],
+  ];
+
+  for (let i = 0; i < inputValsArr.length; i++) {
+    const inputVals = inputValsArr[i];
+    for (const inputVal of inputVals) {
+      if (inputVal === "" || inputVal === "0") {
+        flags[i] = false;
+        break;
+      }
+    }
+  }
+
+  const flag = flags[0] || flags[1] || flags[2];
+
+  if (flag) $("#see-your-roi").removeClass("disabled-button");
+  else $("#see-your-roi").addClass("disabled-button");
 };
 
 const validateForm = (id) => {
@@ -332,11 +444,6 @@ const downloadPdf = async () => {
 
 window.addEventListener("load", function () {
   {
-    // Higlighting first progress dot
-    $("#first-progress-dot").removeClass("disabled-progress-bar");
-  }
-
-  {
     // passing UTM params
     const searchStr = window.location.search.substring(1);
     const queries = searchStr.split("&");
@@ -351,15 +458,34 @@ window.addEventListener("load", function () {
 
   {
     // 1st Section
+
     const providersInput = $("#Providers"),
-      goBtn = $("#calculate-roi");
+      apptRevInput = $("#revenue");
+    goBtn = $("#calculate-roi");
 
-    providersInput.on("input", function () {
-      const providers = $(this).val();
-
-      if (providers && !isNaN(Number(providers)))
+    const checkGoBtn = () => {
+      if (
+        no_of_providers &&
+        !isNaN(Number(no_of_providers)) &&
+        rev_per_appt &&
+        !isNaN(rev_per_appt)
+      )
         goBtn.removeClass("disabled-button");
       else goBtn.addClass("disabled-button");
+    };
+
+    providersInput.on("input", function () {
+      no_of_providers = getNum(providersInput, null);
+
+      checkGoBtn();
+    });
+
+    apptRevInput.on("input", function () {
+      rev_per_appt = getNum(apptRevInput, null);
+      updateAbandonedCallsCost();
+      updateNoShowCost();
+
+      checkGoBtn();
     });
 
     goBtn.on("click", function () {
@@ -374,35 +500,16 @@ window.addEventListener("load", function () {
   }
 
   const showRoiBtn = $("#see-your-roi");
-  const checkRoiBtn = () => {
-    let flag = true;
-    const inputValsArr = [
-      $("#Calls-Make-Per-Day").val(),
-      $("#Speaking-With-Patient").val(),
-      $("#Calls-Receive-Per-Day").val(),
-      $("#Abandoned-Calls").val(),
-      $("#Patients-Seen-Each-Day").val(),
-      $("#No-Shows").val(),
-      $("#Avg-Time-Per-Call").val(),
-      $("#hourlyWage").val(),
-      $("#Percentage-Scheduling").val(),
-      $("#revenue").val(),
-    ];
-
-    for (let i = 0; i < inputValsArr.length; i++) {
-      const inputVal = inputValsArr[i];
-      if (inputVal === "" || inputVal === "0") {
-        flag = false;
-        break;
-      }
-    }
-
-    if (flag) showRoiBtn.removeClass("disabled-button");
-    else showRoiBtn.addClass("disabled-button");
-  };
 
   showRoiBtn.on("click", function () {
     $("#sliderSection").removeClass("hidden");
+
+    $("#specifyKlaraAverages").removeClass("disabled");
+
+    $("#first-progress-dot").addClass("show-icon");
+    $("#first-done-icon").addClass("show");
+    $("#progres-line").addClass("half-full");
+    $("#second-progress-dot").removeClass("disabled-progress-bar");
   });
 
   {
@@ -421,7 +528,7 @@ window.addEventListener("load", function () {
       });
     }
 
-    document.getElementById("num-of-providers").reset();
+    document.getElementById("wf-form-Email-Form-3").reset();
     document.getElementById("roi-calc-form").reset();
 
     {
@@ -431,33 +538,6 @@ window.addEventListener("load", function () {
       );
 
       // Phone tag cost
-
-      const updatePhoneTagCost = () => {
-        let res = calculatePhoneTagCost(
-          outbound_calls_per_day,
-          calls_connected,
-          time_per_call,
-          hourly_wage_calling
-        );
-        if (res !== false) {
-          res = Math.round(res);
-          phone_tag_cost = res;
-          $("#costOfPhone").html("$" + nftd.format(res));
-          $("#result-div1").removeClass("border-grey-500");
-          checkRoiBtn();
-          $("#card-result-1").removeClass("hidden");
-          if (outbound_calls_per_day !== 0 || calls_connected !== 0)
-            $("#clear-button-1").removeClass("disabled");
-          else $("#clear-button-1").addClass("disabled");
-          showTotalSavings({
-            phone_tag_cost,
-            abandoned_calls_cost,
-            no_show_cost,
-          });
-        } else {
-          $("#costOfPhone").text("NA");
-        }
-      };
 
       $("#Calls-Make-Per-Day").on("input", function () {
         outbound_calls_per_day = getNum($(this), 400);
@@ -488,34 +568,6 @@ window.addEventListener("load", function () {
 
       // Abandoned calls cost
 
-      const updateAbandonedCallsCost = () => {
-        let res = calculateAbandonedCallsCost(
-          inbound_calls_per_day,
-          calls_abandoned,
-          percent_calls_scheduling,
-          rev_per_appt
-        );
-        if (res !== false) {
-          res = Math.round(res);
-          abandoned_calls_cost = res;
-          $("#CostAbandoned").html("$" + nftd.format(res));
-          $("#result-div2").removeClass("border-grey-500");
-          checkRoiBtn();
-          $("#clear-button-2").removeClass("disaled");
-          $("#card-result-2").removeClass("hidden");
-          if (inbound_calls_per_day || calls_abandoned)
-            $("#clear-button-2").removeClass("disabled");
-          else $("#clear-button-2").addClass("disabled");
-          showTotalSavings({
-            phone_tag_cost,
-            abandoned_calls_cost,
-            no_show_cost,
-          });
-        } else {
-          $("#CostAbandoned").text("NA");
-        }
-      };
-
       $("#Calls-Receive-Per-Day").on("input", function () {
         inbound_calls_per_day = getNum($(this), 400);
         updateAbandonedCallsCost();
@@ -527,11 +579,6 @@ window.addEventListener("load", function () {
       $("#Percentage-Scheduling").on("input", function () {
         percent_calls_scheduling = getNum($(this), 35) / 100;
         updateAbandonedCallsCost();
-      });
-      $("#revenue").on("input", function () {
-        rev_per_appt = getNum($(this), 150);
-        updateAbandonedCallsCost();
-        updateNoShowCost();
       });
 
       $("#clear-button-2").on("click", function () {
@@ -545,29 +592,6 @@ window.addEventListener("load", function () {
       });
 
       // No-show cost
-
-      const updateNoShowCost = () => {
-        let res = calculateNoShowCost(appts_per_day, no_shows, rev_per_appt);
-        if (res !== false) {
-          res = Math.round(res);
-          no_show_cost = res;
-          $("#costNoShows").html("$" + nftd.format(res));
-          $("#result-div3").removeClass("border-grey-500");
-          checkRoiBtn();
-          $("#clear-button-3").removeClass("disaled");
-          $("#card-result-3").removeClass("hidden");
-          if (appts_per_day || no_shows)
-            $("#clear-button-3").removeClass("disabled");
-          else $("#clear-button-3").addClass("disabled");
-          showTotalSavings({
-            phone_tag_cost,
-            abandoned_calls_cost,
-            no_show_cost,
-          });
-        } else {
-          $("#costNoShows").text("NA");
-        }
-      };
 
       $("#Patients-Seen-Each-Day").on("input", function () {
         appts_per_day = getNum($(this), 200);
@@ -624,10 +648,12 @@ window.addEventListener("load", function () {
       $("#charts-section").removeClass("hidden");
       $("#roi-footer").removeClass("hidden");
 
-      $("#first-progress-dot").addClass("show-icon");
-      $("#first-done-icon").addClass("show");
-      $("#progres-line").addClass("half-full");
-      $("#second-progress-dot").removeClass("disabled-progress-bar");
+      $("#download-result").removeClass("disabled");
+
+      $("#second-progress-dot").addClass("show-icon");
+      $("#second-done-icon").addClass("show");
+      $("#progres-line").addClass("completed-line");
+      $("#third-progress-dot").removeClass("disabled-progress-bar");
     });
   }
 

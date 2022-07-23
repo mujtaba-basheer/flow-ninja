@@ -2,7 +2,7 @@ import gsap from "gsap";
 
 export type CompareMap = {
   fraction: number;
-  heloc: number;
+  he_credit: number;
   reverse_mortgage: number;
   regular_mortgage: number;
   he_investment: number;

@@ -6,7 +6,6 @@ const nftd = Intl.NumberFormat("en-US", {
 
 const getNum = (el, def) => {
   const val = el.val();
-  console.log({ val });
   if (val === "") return def;
   else if (val === "0") return 0;
   else if (isNaN(Number(val))) return "NA";
@@ -66,8 +65,12 @@ window.addEventListener("load", function () {
           $("#noShowsTagCost")
             .html("$" + nftd.format(res))
             .removeClass("inactive");
+          $("#noShowsTagHeading").removeClass("inactive");
+          $("#noShowsTagBorder").removeClass("inactive");
         } else {
           $("#noShowsTagCost").text("NA").addClass("inactive");
+          $("#noShowsTagHeading").addClass("inactive");
+          $("#noShowsTagBorder").addClass("inactive");
         }
       };
 
@@ -94,7 +97,7 @@ window.addEventListener("load", function () {
 
     chiliPiperForm.find("input").each(function () {
       $(this).on("input", function () {
-        flag = validateForm("wf-form-Free-Demo");
+        flag = validateForm1("wf-form-Free-Demo");
         if (flag) {
           submitBtn.removeClass("disabled-button");
         } else {
@@ -140,6 +143,7 @@ window.addEventListener("load", function () {
         lead: leadData,
         injectRootCss: true,
         title: "Schedule your consultation now",
+        map: true,
         onSuccess: function () {
           setTimeout(
             () => $("#wf-form-Free-Demo").css("display", "none"),

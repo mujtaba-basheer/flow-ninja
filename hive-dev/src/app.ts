@@ -1,27 +1,29 @@
-const AWS = require("aws-sdk");
-const fs = require("fs");
-const dotenv = require("dotenv");
-const minify = require("babel-minify");
-dotenv.config();
+import * as AWS from "aws-sdk";
+import * as fs from "fs";
+import * as minify from "babel-minify";
+import { config } from "dotenv";
+
+config();
 
 const creds = new AWS.Credentials({
-  accessKeyId: process.env.S3AccessKeyId,
-  secretAccessKey: process.env.S3SecretAccessKey,
+  accessKeyId: process.env?.S3AccessKeyId as string,
+  secretAccessKey: process.env?.S3SecretAccessKey as string,
 });
 
 const S3 = new AWS.S3({ credentials: creds });
 
-const filesToUpload = ["tab-underline.v2"];
+const filesToUpload: string[] = ["form"];
 
-const returnPromise = (file) => {
+function returnPromise(file: string): Promise<null> {
   return new Promise((res, rej) => {
     S3.upload(
       {
         Bucket: "flow-ninja-assets",
-        Key: `smart-suite/${file}.js`,
-        Body: fs.createReadStream(`smart-suite/${file}.js`),
+        Key: `hive-dev/${file}.js`,
+        Body: fs.createReadStream(`hive-dev/dist/${file}.js`),
         ACL: "public-read",
         ContentType: "application/javascript",
+        CacheControl: "no-cache",
       },
       (err, data) => {
         if (err) rej(err);
@@ -33,22 +35,17 @@ const returnPromise = (file) => {
       }
     );
   });
-};
+}
 
 for (const file of filesToUpload) {
   (async () => {
-    const inputCode = fs.readFileSync(`smart-suite/${file}.js`, {
+    const inputCode = fs.readFileSync(`hive-dev/${file}.js`, {
       encoding: "utf8",
     });
     const outputCode = minify(inputCode, {}).code;
-    fs.writeFileSync(`smart-suite/${file}.min.js`, outputCode, {
+    fs.writeFileSync(`hive-dev/dist/${file}.min.js`, outputCode, {
       encoding: "utf8",
     });
     await returnPromise(file + ".min");
   })();
 }
-// for (const file of filesToUpload) {
-//   (async () => {
-//     await returnPromise(file);
-//   })();
-// }

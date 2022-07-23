@@ -94,8 +94,12 @@ window.addEventListener("load", function () {
           $("#phoneTagCost")
             .html("$" + nftd.format(res))
             .removeClass("inactive");
+          $("#phoneTagHeading").removeClass("inactive");
+          $("#phoneTagBorder").removeClass("inactive");
         } else {
           $("#phoneTagCost").text("NA").addClass("inactive");
+          $("#phoneTagHeading").addClass("inactive");
+          $("#phoneTagBorder").addClass("inactive");
         }
       };
 
@@ -174,6 +178,7 @@ window.addEventListener("load", function () {
         lead: leadData,
         injectRootCss: true,
         title: "Schedule your consultation now",
+        map: true,
         onSuccess: function () {
           setTimeout(
             () => $("#wf-form-Free-Demo").css("display", "none"),

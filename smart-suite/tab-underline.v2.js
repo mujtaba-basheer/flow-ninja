@@ -1,4 +1,15 @@
 window.addEventListener("load", () => {
+  for (let i = 0; i < 10; i++) {
+    try {
+      document.styleSheets[i].insertRule(
+        `.pointer-events { pointer-events: none; }`
+      );
+      break;
+    } catch (error) {
+      continue;
+    }
+  }
+
   // Plarform Tabs
 
   $(document)
@@ -67,103 +78,63 @@ window.addEventListener("load", () => {
   {
     const nextTabBtn = document.getElementById("solutionsRight");
     const prevTabBtn = document.getElementById("solutionsLeft");
-    const leftSlideBtns = document.querySelectorAll("#left, #secondLeft");
-    const rightSlideBtns = document.querySelectorAll("#right, #secondRight");
-    const slides = [".tab1", ".tab2", ".tab-3"];
+    const leftSlideBtns = document.querySelectorAll("#left, #second-left");
+    const rightSlideBtns = document.querySelectorAll("#right, #second-right");
+    const slides = [".tab1", ".tab2"];
     let activeSlide = 0,
-      clickLastTab = false,
-      target = null;
+      clickLastTab = false;
 
     const onSlideChange = () => {
       for (let i = 0; i < slides.length; i++) {
         const slideClass = slides[i];
         const slideTabs = document.querySelectorAll(slideClass);
 
-        if (activeSlide === i)
+        if (activeSlide === i) {
           slideTabs.forEach((tabEl) =>
-            tabEl.classList.remove("pointer-events-tab1")
+            tabEl.classList.remove("pointer-events")
           );
-        else
-          slideTabs.forEach((tabEl) =>
-            tabEl.classList.add("pointer-events-tab1")
-          );
+        } else {
+          slideTabs.forEach((tabEl) => tabEl.classList.add("pointer-events"));
+        }
       }
     };
-    leftSlideBtns.forEach((leftSlideBtn) =>
+
+    leftSlideBtns.forEach((leftSlideBtn) => {
       leftSlideBtn.addEventListener("click", () => {
-        if (target === null && activeSlide === 0) {
-          target = 2;
-          activeSlide = 1;
-          clickLastTab = true;
-          rightSlideBtns[0].click();
-          return;
-        }
-
-        if (target === 0) {
-          if (activeSlide === 1) {
-            activeSlide = 0;
-            setTimeout(() => leftSlideBtns[0].click(), 300);
-            return;
-          } else if (activeSlide === 0) {
-            activeSlide = 1;
-            target = null;
-          }
-        }
-
-        if (activeSlide > 0) activeSlide -= 1;
-        else activeSlide = 2;
-
+        activeSlide = (activeSlide + 1) % 2;
         const tabs = document.querySelectorAll(slides[activeSlide]);
         const targetTab = tabs[clickLastTab ? tabs.length - 1 : 0];
         setTimeout(() => targetTab.click(), 300);
         clickLastTab = false;
 
         onSlideChange();
-      })
-    );
-    rightSlideBtns.forEach((rightSlideBtn) =>
+      });
+    });
+
+    rightSlideBtns.forEach((rightSlideBtn) => {
       rightSlideBtn.addEventListener("click", () => {
-        if (target === null && activeSlide === 2) {
-          target = 0;
-          activeSlide = 1;
-          leftSlideBtns[1].click();
-          return;
-        }
-
-        if (target === 2) {
-          if (activeSlide === 1) {
-            activeSlide = 2;
-            setTimeout(() => rightSlideBtns[1].click(), 300);
-            return;
-          } else if (activeSlide === 2) {
-            activeSlide = 1;
-            target = null;
-          }
-        }
-
-        activeSlide = (activeSlide + 1) % 3;
+        activeSlide = (activeSlide + 1) % 2;
         const tabs = document.querySelectorAll(slides[activeSlide]);
         const targetTab = tabs[clickLastTab ? tabs.length - 1 : 0];
         setTimeout(() => targetTab.click(), 300);
         clickLastTab = false;
 
         onSlideChange();
-      })
-    );
+      });
+    });
+
     nextTabBtn.addEventListener("click", () => {
       const tabs = document.querySelectorAll(slides[activeSlide]);
       const lastTab = tabs[tabs.length - 1];
-      if (lastTab.classList.contains("w--current")) {
-        rightSlideBtns[[0, 1, 1][activeSlide]].click();
-      }
+      if (lastTab.classList.contains("w--current"))
+        rightSlideBtns[activeSlide].click();
     });
     prevTabBtn.addEventListener("click", () => {
       const tabs = document.querySelectorAll(slides[activeSlide]);
       const firstTab = tabs[0];
       clickLastTab = true;
-      if (firstTab.classList.contains("w--current")) {
-        leftSlideBtns[[0, 0, 1][activeSlide]].click();
-      }
+      if (firstTab.classList.contains("w--current"))
+        leftSlideBtns[activeSlide].click();
     });
 
     onSlideChange();
@@ -277,148 +248,6 @@ window.addEventListener("load", () => {
   $(".solutions-category-tabs:first-child")
     .trigger("mouseenter")
     .trigger("mouseleave");
-
-  // See Your Work
-
-  $(document)
-    .find(".see-your-work-tabs-menu")
-    .each(function initialize() {
-      const $container = $(this);
-      const $active = $container.find(".tabs-see-your-work.w--current").first();
-      const $underline = $container.find(".see-your-work-underline");
-
-      const padding = Number($active.css("padding-right").replace("px", ""));
-      const left = $active.position() ? $active.position().left : 0;
-      const width = $active.outerWidth() - padding;
-
-      $underline.css({ left, width, transition: "left 0.4s, width 0.2s" });
-    });
-
-  $(document)
-    .find(".see-your-work-tabs-menu:has(.see-your-work-underline)")
-    .each(function () {
-      const $tabs = $(this).find(".tabs-see-your-work");
-
-      $tabs.on("click", function () {
-        const $this = $(this);
-
-        let offset = 0;
-        if ($this.css("margin-left") !== "0px") {
-          offset = Number($this.css("margin-left").replace("px", ""));
-        }
-        const padding = Number($this.css("padding-right").replace("px", ""));
-        const left = $this.position().left + offset;
-        const width = $this.outerWidth() - padding;
-
-        $(".see-your-work-tabs-menu .see-your-work-underline").css({
-          left,
-          width,
-          opacity: 1,
-          transform: "none",
-        }),
-          setTimeout(
-            () =>
-              $(".see-your-work-tabs-menu .see-your-work-underline").css({
-                left,
-                width,
-                opacity: 1,
-                transform: "none",
-              }),
-            300
-          );
-      });
-      $tabs.on("mouseenter", function () {
-        const $this = $(this);
-        const $parent = $this.parent();
-        const $underline = $parent.find(".see-your-work-underline");
-
-        let offset = 0;
-        if ($this.css("margin-left") !== "0px") {
-          offset = Number($this.css("margin-left").replace("px", ""));
-        }
-        const padding = Number($this.css("padding-right").replace("px", ""));
-        const left = $this.position().left + offset;
-        const width = $this.outerWidth() - padding;
-        $underline.css({
-          left,
-          width,
-          transform: "none",
-          opacity: "1",
-        });
-      });
-      $tabs.on("mouseleave", function () {
-        const $this = $(this);
-        const $parent = $this.parent();
-        const $active = $parent.find(".tabs-see-your-work.w--current").first();
-        const $underline = $parent.find(".see-your-work-underline");
-
-        const isActiveOutsideView =
-          $active.hasClass("pointer-events-tab2") ||
-          $active.hasClass("pointer-events-tab1");
-        let offset = 0;
-        if (isActiveOutsideView) {
-          if ($this.css("margin-left") !== "0px") {
-            offset = Number($this.css("margin-left").replace("px", ""));
-          }
-        } else {
-          if ($active.css("margin-left") !== "0px") {
-            offset = Number($active.css("margin-left").replace("px", ""));
-          }
-        }
-
-        const active_padding = Number(
-          $active.css("padding-right").replace("px", "")
-        );
-        const this_padding = Number(
-          $this.css("padding-right").replace("px", "")
-        );
-        const left = isActiveOutsideView
-          ? $this.position().left + offset
-          : $active.position().left + offset;
-        const width = isActiveOutsideView
-          ? $this.outerWidth() - this_padding
-          : $active.outerWidth() - active_padding;
-
-        $underline.css({
-          left,
-          width,
-          transform: "none",
-        });
-        $underline.animate({ opacity: isActiveOutsideView ? 0 : 1 }, 400);
-      });
-    });
-
-  {
-    const btnLeft = document.querySelector(".tablet-arrow-see-your-work.left");
-    const btnRight = document.querySelector(
-      ".tablet-arrow-see-your-work.right"
-    );
-    const tabsContainer = document.querySelector(".see-your-work-tabs-menu");
-    const tabsLeft = tabsContainer.querySelectorAll(".left");
-    const tabsRight = tabsContainer.querySelectorAll(".right");
-
-    const onMoveToLeft = () => {
-      tabsLeft.forEach((elLeft) => {
-        elLeft.classList.remove("pointer-events-see-your-work-left");
-      });
-      tabsRight.forEach((elRight) => {
-        elRight.classList.add("pointer-events-see-your-work-right");
-      });
-    };
-    const onMoveToRight = () => {
-      tabsRight.forEach((elRight) => {
-        elRight.classList.remove("pointer-events-see-your-work-right");
-      });
-      tabsLeft.forEach((elLeft) => {
-        elLeft.classList.add("pointer-events-see-your-work-left");
-      });
-    };
-
-    onMoveToLeft();
-
-    btnLeft.addEventListener("click", onMoveToLeft);
-    btnRight.addEventListener("click", onMoveToRight);
-  }
 
   // Customer Tabs
 

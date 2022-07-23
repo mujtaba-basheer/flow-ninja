@@ -53,7 +53,7 @@ const constants = {
     MAX_RATE: 0.0938,
     DISCOUNT_RATE: 0.01,
     FEES: 0.025,
-    HE_CREDIT_FEES: 0.025,
+    HELOC_FEES: 0.025,
     HE_INV_DISCOUNT: 0.1,
     HE_INV_MULTIPLE: 3.5,
     HE_AGR_MULTIPLE: 1.5,
@@ -78,7 +78,7 @@ const idMaps = {
     },
 };
 const competitionValMap = {
-    "Home equity line of credit": "he_credit",
+    HELOCs: "heloc",
     "Reverse Mortgage": "reverse_mortgage",
     "Regular Mortgage": "regular_mortgage",
     "Home equity investments": "he_investment",
@@ -146,7 +146,7 @@ const calc = () => {
     else {
         results.rate.fraction = appreciation;
     }
-    results.rate.he_credit = 0.04;
+    results.rate.heloc = 0.04;
     results.rate.reverse_mortgage = constants.REV_MORT_RATE;
     results.rate.regular_mortgage = constants.REG_MORT_RATE;
     results.rate.he_investment =
@@ -162,14 +162,14 @@ const calc = () => {
             loan_amt, 0.2) - 1;
     // calculating monthly payments
     results.monthly_payment.fraction = 0;
-    results.monthly_payment.he_credit = loan_amt * (results.rate.he_credit / 12);
+    results.monthly_payment.heloc = loan_amt * (results.rate.heloc / 12);
     results.monthly_payment.reverse_mortgage = 0;
     results.monthly_payment.regular_mortgage = payment;
     results.monthly_payment.he_investment = 0;
     results.monthly_payment.he_agreement = 0;
     // calculating cash out of pocket
     results.cash_pocket.fraction = -PV(constants.DISCOUNT_RATE, term, 0, loan_amt * (1 + constants.FEES) * appreciation * term + loan_amt);
-    results.cash_pocket.he_credit = PV(constants.DISCOUNT_RATE, term, -loan_amt * (1 + constants.HE_CREDIT_FEES) * appreciation, -loan_amt);
+    results.cash_pocket.heloc = PV(constants.DISCOUNT_RATE, term, -loan_amt * (1 + constants.HELOC_FEES) * appreciation, -loan_amt);
     results.cash_pocket.reverse_mortgage = -PV(constants.DISCOUNT_RATE, term, 0, loan_amt *
         (1 + constants.REV_MORT_FEES) *
         Math.pow(1 + constants.REV_MORT_RATE, term));
@@ -186,9 +186,9 @@ const calc = () => {
     results.net_cost.fraction =
         Math.pow((loan_amt * (1 + constants.FEES) * appreciation * term + loan_amt) /
             loan_amt, 1 / term) - 1;
-    results.net_cost.he_credit =
-        Math.pow((loan_amt * (1 + constants.HE_CREDIT_FEES) * appreciation * 5 +
-            loan_amt * (1 + constants.HE_CREDIT_FEES)) /
+    results.net_cost.heloc =
+        Math.pow((loan_amt * (1 + constants.HELOC_FEES) * appreciation * 5 +
+            loan_amt * (1 + constants.HELOC_FEES)) /
             loan_amt, 1 / term) - 1;
     results.net_cost.reverse_mortgage =
         Math.pow((loan_amt *

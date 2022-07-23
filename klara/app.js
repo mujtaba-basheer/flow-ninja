@@ -18,7 +18,6 @@ const returnPromise = (file) => {
     S3.upload(
       {
         Bucket: "flow-ninja-assets",
-        // Bucket: "ahaan-static-files",
         Key: `klara/${file}.js`,
         Body: fs.createReadStream(`klara/${file}.js`),
         ACL: "public-read",

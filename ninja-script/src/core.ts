@@ -1,24 +1,27 @@
 type SwiperPropsMap = {
   [prop: string]: {
     attr: string;
-    type: string[];
+    type: ("boolean" | "string" | "number" | "auto" | "swiper")[];
     has_props?: boolean;
     parent?: string;
   };
 };
 
-const kebabToCamelCase = (str: string) => {
-  const words = str.split("-");
-  let cs: string = "";
-  for (let i = 0; i < words.length; i++) {
-    let word = words[i];
-    if (i !== 0 && word) {
-      word = word.charAt(0).toUpperCase() + word.substring(1);
-    }
-    cs += word;
-  }
-  return cs;
-};
+// const kebabToCamelCase = (str: string) => {
+//   const words = str.split("-");
+//   let cs: string = "";
+//   for (let i = 0; i < words.length; i++) {
+//     let word = words[i];
+//     if (i !== 0 && word) {
+//       word = word.charAt(0).toUpperCase() + word.substring(1);
+//     }
+//     cs += word;
+//   }
+//   return cs;
+// };
+
+const swiperMap = new Map<string, any>();
+const thumbsMap = new Map<string, string>();
 
 const get_swiper_props = (el: HTMLElement) => {
   const swiper_props_map: SwiperPropsMap = {
@@ -53,6 +56,52 @@ const get_swiper_props = (el: HTMLElement) => {
       type: ["boolean"],
       parent: "autoplay",
     },
+    "swiper-a11y": {
+      attr: "a11y",
+      type: ["boolean"],
+      has_props: true,
+    },
+    "ws-progress": {
+      attr: "watchSlidesProgress",
+      type: ["boolean"],
+    },
+    "centered-slides": {
+      attr: "centeredSlides",
+      type: ["boolean"],
+    },
+    "grab-cursor": {
+      attr: "grabCursor",
+      type: ["boolean"],
+    },
+    "touch-move": {
+      attr: "allowTouchMove",
+      type: ["boolean"],
+    },
+    "swiper-nav": {
+      attr: "navigation",
+      type: ["boolean"],
+      has_props: true,
+    },
+    "nav-right": {
+      attr: "nextEl",
+      type: ["string"],
+      parent: "navigation",
+    },
+    "nav-left": {
+      attr: "prevEl",
+      type: ["string"],
+      parent: "navigation",
+    },
+    "swiper-thumbs": {
+      attr: "thumbs",
+      type: ["boolean"],
+      has_props: true,
+    },
+    "thumbs-el": {
+      attr: "swiper",
+      type: ["swiper"],
+      parent: "thumbs",
+    },
   };
 
   const default_config = {
@@ -60,11 +109,13 @@ const get_swiper_props = (el: HTMLElement) => {
     speed: 1100,
     loop: true,
     slidesPerView: "auto",
+    allowTouchMove: false,
     autoplay: {
       delay: 500,
       disableOnInteraction: false,
     },
   };
+
   const custom_config = {};
   for (const attr of Object.keys(swiper_props_map)) {
     const val = el.getAttribute(attr);
@@ -74,6 +125,14 @@ const get_swiper_props = (el: HTMLElement) => {
       const types = prop_details.type;
       for (const type of types) {
         switch (type) {
+          case "string": {
+            custom_config[prop_details.attr] = {
+              val,
+              parent: prop_details.parent,
+              attr,
+            };
+            break;
+          }
           case "number": {
             if (!isNaN(Number(val))) {
               custom_config[prop_details.attr] = {
@@ -104,11 +163,22 @@ const get_swiper_props = (el: HTMLElement) => {
             }
             break;
           }
+          case "swiper": {
+            if (swiperMap.has(val)) {
+              custom_config[prop_details.attr] = {
+                val: swiperMap.get(val),
+                parent: prop_details.parent,
+                attr,
+              };
+            } else if (attr === "thumbs-el") {
+              thumbsMap.set(el.id, val);
+            }
+            break;
+          }
         }
       }
     }
   }
-
   for (const prop of Object.keys(custom_config)) {
     if (
       custom_config[prop].parent &&
@@ -134,15 +204,39 @@ window.addEventListener("load", (ev: any) => {
   document.body.style["-webkit-font-smoothing"] = "antialiased";
   document.body.style["-moz-osx-font-smoothing"] = "greyscale";
 
-  // initializing swipers
-  const swiper_elements = document.querySelectorAll<HTMLElement>(
-    '[ninja-swiper="enabled"]'
+  // initializing thumbs swipers
+  const swiper_thumb_elements = document.querySelectorAll<HTMLElement>(
+    '[ninja-swiper="enabled"][thumbs]'
   );
-  swiper_elements.forEach((swiper_element) => {
+  swiper_thumb_elements.forEach((swiper_element) => {
+    const id = swiper_element.id;
     const swiper_props = get_swiper_props(swiper_element);
     // @ts-ignore
-    new Swiper(swiper_element, swiper_props);
+    const swiper = new Swiper(swiper_element, swiper_props);
+    swiperMap.set(id, swiper);
   });
+  for (const x of thumbsMap.entries()) {
+    const [main, thumb] = x;
+    swiperMap.get(main).thumbs.swiper = swiperMap.get(thumb);
+    swiperMap.get(main).init();
+  }
+
+  // initializing swipers
+  const swiper_elements = document.querySelectorAll<HTMLElement>(
+    '[ninja-swiper="enabled"]:not([thumbs])'
+  );
+  swiper_elements.forEach((swiper_element) => {
+    const id = swiper_element.id;
+    const swiper_props = get_swiper_props(swiper_element);
+    // @ts-ignore
+    const swiper = new Swiper(swiper_element, swiper_props);
+    swiperMap.set(id, swiper);
+  });
+  for (const x of thumbsMap.entries()) {
+    const [main, thumb] = x;
+    swiperMap.get(main).thumbs.swiper = swiperMap.get(thumb);
+    swiperMap.get(main).init();
+  }
 
   let ssIndex = 0;
   while (true) {

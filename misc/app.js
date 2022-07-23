@@ -11,7 +11,7 @@ const creds = new AWS.Credentials({
 
 const S3 = new AWS.S3({ credentials: creds });
 
-const filesToUpload = ["pardot-handler"];
+const filesToUpload = ["fontaine-filter"];
 
 const returnPromise = (file) => {
   return new Promise((res, rej) => {
@@ -44,7 +44,7 @@ for (const file of filesToUpload) {
     fs.writeFileSync(`misc/${file}.min.js`, outputCode, {
       encoding: "utf8",
     });
-    await returnPromise(file + ".min");
+    // await returnPromise(file + ".min");
   })();
 }
 // for (const file of filesToUpload) {

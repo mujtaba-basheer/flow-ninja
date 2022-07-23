@@ -122,8 +122,12 @@ window.addEventListener("load", function () {
           $("#phoneTagCost")
             .html("$" + nftd.format(res))
             .removeClass("inactive");
+          $("#phoneTagHeading").removeClass("inactive");
+          $("#phoneTagBorder").removeClass("inactive");
         } else {
           $("#phoneTagCost").text("NA").addClass("inactive");
+          $("#phoneTagHeading").addClass("inactive");
+          $("#phoneTagBorder").addClass("inactive");
         }
       };
 
@@ -170,8 +174,12 @@ window.addEventListener("load", function () {
           $("#abandonedTagCost")
             .html("$" + nftd.format(res))
             .removeClass("inactive");
+          $("#abandonedTagHeading").removeClass("inactive");
+          $("#abandonedTagBorder").removeClass("inactive");
         } else {
           $("#abandonedTagCost").text("NA").addClass("inactive");
+          $("#abandonedTagHeading").addClass("inactive");
+          $("#abandonedTagBorder").addClass("inactive");
         }
       };
 
@@ -208,8 +216,12 @@ window.addEventListener("load", function () {
           $("#noShowsTagCost")
             .html("$" + nftd.format(res))
             .removeClass("inactive");
+          $("#noShowsTagHeading").removeClass("inactive");
+          $("#noShowsTagBorder").removeClass("inactive");
         } else {
           $("#noShowsTagCost").text("NA").addClass("inactive");
+          $("#noShowsTagHeading").addClass("inactive");
+          $("#noShowsTagBorder").addClass("inactive");
         }
       };
 
@@ -303,6 +315,7 @@ window.addEventListener("load", function () {
         lead: leadData,
         injectRootCss: true,
         title: "Schedule your consultation now",
+        map: true,
         onSuccess: function () {
           setTimeout(
             () => $("#wf-form-Free-Demo").css("display", "none"),
