@@ -9,13 +9,15 @@ const creds = new AWS.Credentials({
     secretAccessKey: process.env.S3SecretAccessKey,
 });
 const S3 = new AWS.S3({ credentials: creds });
-const filesToUpload = ["thumbs"];
+const filesToUpload = ["vertical"];
 function returnPromise(file) {
     return new Promise((res, rej) => {
         S3.upload({
             Bucket: "flow-ninja-assets",
             Key: `ninja-script/${file}.html`,
+            // Key: `ninja-script/${file}.js`,
             Body: fs.createReadStream(`ninja-script/${file}.html`),
+            // Body: fs.createReadStream(`ninja-script/${file}.js`),
             ACL: "public-read",
             // ContentType: "application/javascript",
             ContentType: "text/html",
@@ -33,14 +35,16 @@ function returnPromise(file) {
 }
 for (const file of filesToUpload) {
     (async () => {
-        // const inputCode = fs.readFileSync(`ninja-script/${file}.js`, {
-        //   encoding: "utf8",
-        // });
-        // const outputCode = minify(inputCode, {}).code;
-        // fs.writeFileSync(`ninja-script/${file}.min.js`, outputCode, {
-        //   encoding: "utf8",
-        // });
-        // await returnPromise(file + ".min");
+        /*
+        const inputCode = fs.readFileSync(`ninja-script/${file}.js`, {
+          encoding: "utf8",
+        });
+        const outputCode = minify(inputCode, {}).code;
+        fs.writeFileSync(`ninja-script/${file}.min.js`, outputCode, {
+          encoding: "utf8",
+        });
+        await returnPromise(file + ".min");
+        */
         await returnPromise(file);
     })();
 }

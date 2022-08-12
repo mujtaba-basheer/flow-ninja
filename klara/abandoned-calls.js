@@ -163,6 +163,8 @@ window.addEventListener("load", function () {
         Email: $("#Email").val(),
         Phone: $("#Phone").val(),
         Company: $("#Company").val(),
+        State: $("#State").val(),
+        number_of_providers__c: $("#number_of_providers__c").val(),
         EMR__c: $("#EMR__c").val(),
         Notes: dataStr,
 

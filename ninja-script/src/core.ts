@@ -7,101 +7,84 @@ type SwiperPropsMap = {
   };
 };
 
-// const kebabToCamelCase = (str: string) => {
-//   const words = str.split("-");
-//   let cs: string = "";
-//   for (let i = 0; i < words.length; i++) {
-//     let word = words[i];
-//     if (i !== 0 && word) {
-//       word = word.charAt(0).toUpperCase() + word.substring(1);
-//     }
-//     cs += word;
-//   }
-//   return cs;
-// };
-
 const swiperMap = new Map<string, any>();
 const thumbsMap = new Map<string, string>();
 
+const parseBreakpoints = (attr: string) => {
+  const res = {};
+  const bps = attr.split(";");
+  bps.forEach((s) => {
+    const params = {};
+    const n = s.split(":")[0].trim();
+    const q = s.split(":")[1].trim();
+
+    const sp = new URLSearchParams(q);
+    const e = sp.entries();
+    while (true) {
+      try {
+        const { value, done } = e.next();
+        if (done) break;
+
+        let [k, v] = value;
+        if (v === "true") v = true as unknown as string;
+        else if (v === "false") v = false as unknown as string;
+
+        params[k] = v;
+      } catch (error) {
+        break;
+      }
+    }
+
+    res[+n] = params;
+  });
+  return res;
+};
+
 const get_swiper_props = (el: HTMLElement) => {
   const swiper_props_map: SwiperPropsMap = {
-    "space-between": {
-      attr: "spaceBetween",
-      type: ["number"],
-    },
-    speed: {
-      attr: "speed",
-      type: ["number"],
-    },
-    "swiper-loop": {
-      attr: "loop",
-      type: ["boolean"],
-    },
-    "slides-per-view": {
-      attr: "slidesPerView",
-      type: ["number", "auto"],
-    },
-    "swiper-autoplay": {
-      attr: "autoplay",
-      type: ["boolean"],
-      has_props: true,
-    },
+    "swiper-a11y": { attr: "a11y", type: ["boolean"], has_props: true },
+    "touch-move": { attr: "allowTouchMove", type: ["boolean"] },
+    "auto-height": { attr: "autoHeight", type: ["boolean"] },
+    "swiper-autoplay": { attr: "autoplay", type: ["boolean"], has_props: true },
+    "swiper-bp": { attr: "breakpoints", type: ["string"] },
+    "centered-slides": { attr: "centeredSlides", type: ["boolean"] },
     "swiper-autoplay-delay": {
       attr: "delay",
       type: ["number"],
       parent: "autoplay",
     },
+    "swiper-direction": { attr: "direction", type: ["string"] },
     "swiper-autoplay-disableinteraction": {
       attr: "disableOnInteraction",
       type: ["boolean"],
       parent: "autoplay",
     },
-    "swiper-a11y": {
-      attr: "a11y",
+    "grab-cursor": { attr: "grabCursor", type: ["boolean"] },
+    "swiper-loop": { attr: "loop", type: ["boolean"] },
+    "swiper-nav": { attr: "navigation", type: ["boolean"], has_props: true },
+    "nav-right": { attr: "nextEl", type: ["string"], parent: "navigation" },
+    "swiper-pagination": {
+      attr: "pagination",
       type: ["boolean"],
       has_props: true,
     },
-    "ws-progress": {
-      attr: "watchSlidesProgress",
-      type: ["boolean"],
-    },
-    "centered-slides": {
-      attr: "centeredSlides",
-      type: ["boolean"],
-    },
-    "grab-cursor": {
-      attr: "grabCursor",
-      type: ["boolean"],
-    },
-    "touch-move": {
-      attr: "allowTouchMove",
-      type: ["boolean"],
-    },
-    "swiper-nav": {
-      attr: "navigation",
-      type: ["boolean"],
-      has_props: true,
-    },
-    "nav-right": {
-      attr: "nextEl",
+    "pagination-el": {
+      attr: "el",
       type: ["string"],
-      parent: "navigation",
+      parent: "pagination",
     },
-    "nav-left": {
-      attr: "prevEl",
-      type: ["string"],
-      parent: "navigation",
-    },
-    "swiper-thumbs": {
-      attr: "thumbs",
+    "pagination-click": {
+      attr: "clickable",
       type: ["boolean"],
-      has_props: true,
+      parent: "pagination",
     },
-    "thumbs-el": {
-      attr: "swiper",
-      type: ["swiper"],
-      parent: "thumbs",
-    },
+    "nav-left": { attr: "prevEl", type: ["string"], parent: "navigation" },
+    "slides-per-view": { attr: "slidesPerView", type: ["number", "auto"] },
+    "space-between": { attr: "spaceBetween", type: ["number"] },
+    speed: { attr: "speed", type: ["number"] },
+    "thumbs-el": { attr: "swiper", type: ["swiper"], parent: "thumbs" },
+    "swiper-thumbs": { attr: "thumbs", type: ["boolean"], has_props: true },
+    "ws-progress": { attr: "watchSlidesProgress", type: ["boolean"] },
   };
 
   const default_config = {
@@ -225,9 +208,14 @@ window.addEventListener("load", (ev: any) => {
   const swiper_elements = document.querySelectorAll<HTMLElement>(
     '[ninja-swiper="enabled"]:not([thumbs])'
   );
-  swiper_elements.forEach((swiper_element) => {
+  swiper_elements.forEach((swiper_element: HTMLElement) => {
     const id = swiper_element.id;
     const swiper_props = get_swiper_props(swiper_element);
+    const bps = swiper_element.getAttribute("swiper-bp");
+    if (bps) {
+      swiper_props["breakpoints"] = parseBreakpoints(bps);
+    }
+    console.log(swiper_props);
     // @ts-ignore
     const swiper = new Swiper(swiper_element, swiper_props);
     swiperMap.set(id, swiper);
