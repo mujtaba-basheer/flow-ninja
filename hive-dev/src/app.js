@@ -1,4 +1,5 @@
 "use strict";
+var _a, _b;
 Object.defineProperty(exports, "__esModule", { value: true });
 const AWS = require("aws-sdk");
 const fs = require("fs");
@@ -6,8 +7,8 @@ const minify = require("babel-minify");
 const dotenv_1 = require("dotenv");
 (0, dotenv_1.config)();
 const creds = new AWS.Credentials({
-    accessKeyId: process.env.S3AccessKeyId,
-    secretAccessKey: process.env.S3SecretAccessKey,
+    accessKeyId: (_a = process.env) === null || _a === void 0 ? void 0 : _a.S3AccessKeyId,
+    secretAccessKey: (_b = process.env) === null || _b === void 0 ? void 0 : _b.S3SecretAccessKey,
 });
 const S3 = new AWS.S3({ credentials: creds });
 const filesToUpload = ["form"];
@@ -15,13 +16,10 @@ function returnPromise(file) {
     return new Promise((res, rej) => {
         S3.upload({
             Bucket: "flow-ninja-assets",
-            // Key: `ninja-script/${file}.html`,
-            Key: `ninja-script/${file}.js`,
-            // Body: fs.createReadStream(`ninja-script/${file}.html`),
-            Body: fs.createReadStream(`ninja-script/${file}.js`),
+            Key: `hive-dev/${file}.js`,
+            Body: fs.createReadStream(`hive-dev/dist/${file}.js`),
             ACL: "public-read",
             ContentType: "application/javascript",
-            // ContentType: "text/html",
             CacheControl: "no-cache",
         }, (err, data) => {
             if (err)
@@ -36,11 +34,11 @@ function returnPromise(file) {
 }
 for (const file of filesToUpload) {
     (async () => {
-        const inputCode = fs.readFileSync(`ninja-script/${file}.js`, {
+        const inputCode = fs.readFileSync(`hive-dev/${file}.js`, {
             encoding: "utf8",
         });
         const outputCode = minify(inputCode, {}).code;
-        fs.writeFileSync(`ninja-script/${file}.min.js`, outputCode, {
+        fs.writeFileSync(`hive-dev/dist/${file}.min.js`, outputCode, {
             encoding: "utf8",
         });
         await returnPromise(file + ".min");
