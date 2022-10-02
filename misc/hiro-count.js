@@ -11,11 +11,9 @@ process.env.ACCESS_TOKEN =
 
 const handler = async function (event, context, callback) {
   try {
-    const blogsResp = callApi(
-      "62b3510ffb9f156cdce98e14" || "62b3510ffb9f157af2e98e0b"
-    );
-    const categoriesResp = callApi("62b3510ffb9f157af2e98e0b");
-    const typesResp = callApi("62b3510ffb9f1568d9e98e1c");
+    const blogsResp = callApi("62fa931f30aca6e5c270cd0b");
+    const categoriesResp = callApi("62fa931f30aca62a7370cd3f");
+    const typesResp = callApi("62fa931f30aca67ebf70cce4");
 
     const [blogs, categories, types] = await Promise.all([
       blogsResp,

@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const AWS = require("aws-sdk");
 const fs = require("fs");
-const minify = require("babel-minify");
 const dotenv_1 = require("dotenv");
 (0, dotenv_1.config)();
 const creds = new AWS.Credentials({
@@ -10,18 +9,18 @@ const creds = new AWS.Credentials({
     secretAccessKey: process.env.S3SecretAccessKey,
 });
 const S3 = new AWS.S3({ credentials: creds });
-const filesToUpload = ["form"];
+const filesToUpload = ["num-pagination"];
 function returnPromise(file) {
     return new Promise((res, rej) => {
         S3.upload({
             Bucket: "flow-ninja-assets",
-            // Key: `ninja-script/${file}.html`,
-            Key: `ninja-script/${file}.js`,
-            // Body: fs.createReadStream(`ninja-script/${file}.html`),
-            Body: fs.createReadStream(`ninja-script/${file}.js`),
+            // Key: `ninja-script/${file}.js`,
+            // Body: fs.createReadStream(`ninja-script/${file}.js`),
+            // ContentType: "application/javascript",
+            Key: `ninja-script/${file}.html`,
+            Body: fs.createReadStream(`ninja-script/${file}.html`),
+            ContentType: "text/html",
             ACL: "public-read",
-            ContentType: "application/javascript",
-            // ContentType: "text/html",
             CacheControl: "no-cache",
         }, (err, data) => {
             if (err)
@@ -35,14 +34,17 @@ function returnPromise(file) {
     });
 }
 for (const file of filesToUpload) {
+    // (async () => {
+    //   const inputCode = fs.readFileSync(`ninja-script/${file}.js`, {
+    //     encoding: "utf8",
+    //   });
+    //   const outputCode = minify(inputCode, {}).code;
+    //   fs.writeFileSync(`ninja-script/${file}.min.js`, outputCode, {
+    //     encoding: "utf8",
+    //   });
+    //   await returnPromise(file + ".min");
+    // })();
     (async () => {
-        const inputCode = fs.readFileSync(`ninja-script/${file}.js`, {
-            encoding: "utf8",
-        });
-        const outputCode = minify(inputCode, {}).code;
-        fs.writeFileSync(`ninja-script/${file}.min.js`, outputCode, {
-            encoding: "utf8",
-        });
-        await returnPromise(file + ".min");
+        await returnPromise(file);
     })();
 }

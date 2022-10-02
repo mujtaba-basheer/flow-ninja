@@ -1,3 +1,8 @@
+const state = {
+  limit: 6,
+  pageNo: 1,
+};
+
 const filters = {
   capacity: new Set(),
   deckType: new Set(),
@@ -8,94 +13,101 @@ const filters = {
   trailerType: new Set(),
   suspension: new Set(),
 };
-const pageCategory = "compare-" + window.location.pathname.split("/")[2];
-
+const currentTab = "Construction";
 const lists = [
-  {
-    id: "capacity",
-    filterId: "capacity",
-    filterAttr: "capacity",
-  },
-  {
-    id: "deck-type",
-    filterId: "deckType",
-    filterAttr: "deck-type",
-  },
+  { id: "capacity", filterId: "capacity", filterAttr: "capacity" },
+  { id: "deck-type", filterId: "deckType", filterAttr: "deck-type" },
   {
     id: "spreader-capable",
     filterId: "spreaderCapable",
     filterAttr: "spreader",
   },
-  {
-    id: "deck-length",
-    filterId: "deckLength",
-    filterAttr: "deck-length",
-  },
-  {
-    id: "gooseneck",
-    filterId: "gooseneck",
-    filterAttr: "gooseneck",
-  },
-  {
-    id: "deck-height",
-    filterId: "deckHeight",
-    filterAttr: "deck-height",
-  },
-  {
-    id: "trailer-type",
-    filterId: "trailerType",
-    filterAttr: "trailer",
-  },
-  {
-    id: "suspension",
-    filterId: "suspension",
-    filterAttr: "suspension",
-  },
+  { id: "deck-length", filterId: "deckLength", filterAttr: "deck-length" },
+  { id: "gooseneck", filterId: "gooseneck", filterAttr: "gooseneck" },
+  { id: "deck-height", filterId: "deckHeight", filterAttr: "deck-height" },
+  { id: "trailer-type", filterId: "trailerType", filterAttr: "trailer" },
+  { id: "suspension", filterId: "suspension", filterAttr: "suspension" },
 ];
 
 const applyFilters = () => {
-  const items = document.querySelectorAll(
-    `div.${pageCategory} div.trailer-item.w-dyn-item`
-  );
-  for (let i = 0; i < items.length; i++) {
-    const item = items[i];
-
-    for (const listItem of lists) {
-      const { filterId, filterAttr } = listItem;
-
+  const currentTab = getCurrentTab();
+  const items = currentTab.querySelectorAll(`div.trailer-item.w-dyn-item`);
+  for (let b = 0; b < items.length; b++) {
+    const item = items[b];
+    for (const a of lists) {
+      const { filterId, filterAttr } = a;
       if (filters[filterId].size) {
-        const value = item
-          .querySelector(
-            `div.dev-note .filter-option-target[fs-cmsfilter-field="${filterAttr}"]`
-          )
-          .textContent.toUpperCase()
-          .trim();
-
-        if (!filters[filterId].has(value)) {
-          item.classList.add("hide");
-          break;
+        const e = item.querySelector(
+          `div.specifications .filter-option-target[fs-cmsfilter-field="${filterAttr}"]`
+        );
+        if (e) {
+          const a = e.textContent.toUpperCase().trim();
+          if (!filters[filterId].has(a)) {
+            item.classList.add("hide");
+            item.classList.remove("sel");
+            break;
+          }
+          // item.classList.remove("hide");
+          item.classList.add("sel");
+        } else {
+          {
+            item.classList.add("hide");
+            item.classList.remove("sel");
+          }
         }
-        item.classList.remove("hide");
-      } else item.classList.remove("hide");
+      } else {
+        // item.classList.remove("hide");
+        item.classList.add("sel");
+      }
     }
   }
 
-  document.getElementById("results-count").textContent =
-    document.querySelectorAll(
-      `div.${pageCategory} div.trailer-item.w-dyn-item:not(.hide)`
-    ).length;
+  state.pageNo = 1;
+  applyPagination();
 };
 
-window.addEventListener("load", () => {
-  const totalItems = document.querySelectorAll(
-    `div.${pageCategory} div.trailer-item.w-dyn-item`
-  ).length;
-  document.getElementById("results-count").textContent = totalItems;
-  document.getElementById("id-count").textContent = totalItems;
+const applyPagination = () => {
+  const currentTab = getCurrentTab();
+  const { pageNo, limit } = state;
+  const loadBtn = currentTab.querySelector(".button.load-more");
+  loadBtn.classList.remove("hide");
+  const selectedEl = currentTab.querySelectorAll(
+    `div.trailer-item.w-dyn-item.sel`
+  );
+  const selectedNos = selectedEl.length;
 
-  document
-    .querySelectorAll("div.w-condition-invisible")
-    .forEach((x) => x.remove());
+  let f = (pageNo - 1) * limit;
+  let r = f + (limit - 1);
+  if (r + 1 >= selectedNos) {
+    r = selectedNos - 1;
+    loadBtn.classList.add("hide");
+  }
+
+  for (let i = 0; i < selectedNos; i++) {
+    if (i <= r) selectedEl[i].classList.remove("hide");
+    else selectedEl[i].classList.add("hide");
+  }
+
+  const [dispEl, totalEl] = currentTab.querySelectorAll(`span.results-count`);
+  dispEl.textContent = currentTab.querySelectorAll(
+    "div.trailer-item.w-dyn-item.sel:not(.hide)"
+  ).length;
+  totalEl.textContent = selectedEl.length;
+};
+
+const getCurrentTab = () =>
+  document.querySelector(
+    `div.w-tab-pane.w--tab-active[data-w-tab="${currentTab}"]`
+  );
+
+window.addEventListener("load", () => {
+  const currentTabEl = getCurrentTab();
+  const totalItems = currentTabEl.querySelectorAll(
+    `div.trailer-item.w-dyn-item`
+  ).length;
+  const [dispEl, totalEl] = currentTabEl.querySelectorAll(`span.results-count`);
+  dispEl.textContent = totalItems;
+  totalEl.textContent = totalItems;
 
   for (const listItem of lists) {
     const { id, filterId } = listItem;
@@ -104,35 +116,42 @@ window.addEventListener("load", () => {
     );
     for (const checkbox of checkboxes) {
       checkbox.checked = false;
-
       checkbox.addEventListener("change", () => {
-        const text = checkbox.nextElementSibling.textContent
+        const filterLabel = checkbox.nextElementSibling.textContent
           .toUpperCase()
           .trim();
-        if (checkbox.checked) filters[filterId].add(text);
-        else filters[filterId].delete(text);
-
+        filters[filterId]?.[checkbox.checked ? "add" : "delete"](filterLabel);
         applyFilters();
       });
     }
   }
 
-  document.getElementById("reset-btn").addEventListener("click", () => {
-    for (const listItem of lists) {
-      const { id, filterId } = listItem;
-      filters[filterId].clear();
-
-      const checkboxes = document.querySelectorAll(
-        `nav.${id}-list input[type="checkbox"]`
-      );
-      for (const checkbox of checkboxes) {
-        checkbox.checked = false;
-        checkbox.previousElementSibling.classList.remove(
-          "w--redirected-checked"
+  const resetBtns = document.querySelectorAll(".reset-button");
+  resetBtns.forEach((resetBtn) =>
+    resetBtn.addEventListener("click", () => {
+      for (const listItem of lists) {
+        const { id, filterId } = listItem;
+        filters[filterId].clear();
+        const checkboxes = document.querySelectorAll(
+          `nav.${id}-list input[type="checkbox"]`
         );
+        for (const checkbox of checkboxes) {
+          checkbox.checked = false;
+          checkbox.previousElementSibling.classList.remove(
+            "w--redirected-checked"
+          );
+        }
+        applyFilters();
       }
+    })
+  );
 
-      applyFilters();
-    }
-  });
+  const loadMoreBtns = document.querySelectorAll(".load-more");
+  loadMoreBtns.forEach((loadMoreBtn) =>
+    loadMoreBtn.addEventListener("click", () => {
+      state.pageNo++;
+      applyPagination();
+    })
+  );
+  applyFilters();
 });

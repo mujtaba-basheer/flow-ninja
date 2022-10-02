@@ -12,20 +12,23 @@ const creds = new AWS.Credentials({
 
 const S3 = new AWS.S3({ credentials: creds });
 
-const filesToUpload: string[] = ["form"];
+const filesToUpload: string[] = ["num-pagination"];
 
 function returnPromise(file: string): Promise<null> {
   return new Promise((res, rej) => {
     S3.upload(
       {
         Bucket: "flow-ninja-assets",
-        // Key: `ninja-script/${file}.html`,
-        Key: `ninja-script/${file}.js`,
-        // Body: fs.createReadStream(`ninja-script/${file}.html`),
-        Body: fs.createReadStream(`ninja-script/${file}.js`),
+
+        // Key: `ninja-script/${file}.js`,
+        // Body: fs.createReadStream(`ninja-script/${file}.js`),
+        // ContentType: "application/javascript",
+
+        Key: `ninja-script/${file}.html`,
+        Body: fs.createReadStream(`ninja-script/${file}.html`),
+        ContentType: "text/html",
+
         ACL: "public-read",
-        ContentType: "application/javascript",
-        // ContentType: "text/html",
         CacheControl: "no-cache",
       },
       (err, data) => {
@@ -41,14 +44,17 @@ function returnPromise(file: string): Promise<null> {
 }
 
 for (const file of filesToUpload) {
+  // (async () => {
+  //   const inputCode = fs.readFileSync(`ninja-script/${file}.js`, {
+  //     encoding: "utf8",
+  //   });
+  //   const outputCode = minify(inputCode, {}).code;
+  //   fs.writeFileSync(`ninja-script/${file}.min.js`, outputCode, {
+  //     encoding: "utf8",
+  //   });
+  //   await returnPromise(file + ".min");
+  // })();
   (async () => {
-    const inputCode = fs.readFileSync(`ninja-script/${file}.js`, {
-      encoding: "utf8",
-    });
-    const outputCode = minify(inputCode, {}).code;
-    fs.writeFileSync(`ninja-script/${file}.min.js`, outputCode, {
-      encoding: "utf8",
-    });
-    await returnPromise(file + ".min");
+    await returnPromise(file);
   })();
 }

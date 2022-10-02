@@ -1,6 +1,6 @@
 window.addEventListener("load", () => {
   const formEls = document.querySelectorAll<HTMLFormElement>(
-    `form.custom-form[form-validation="true"]`
+    `form[form-validation="true"]`
   );
 
   const state: boolean[] = new Array(formEls.length);
@@ -11,6 +11,10 @@ window.addEventListener("load", () => {
     onSubmit?: boolean
   ) => {
     state[index] = true;
+
+    formEl
+      .querySelector(`input[type="submit"]`)
+      ?.classList?.remove("filled-form");
 
     // managing input fields
     const inputFields = formEl.querySelectorAll<HTMLInputElement>(
@@ -34,6 +38,12 @@ window.addEventListener("load", () => {
         const re =
           /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/g;
         flag = re.test(inputField.value);
+      }
+
+      // handling patterns
+      const inputPattern = inputField.getAttribute("pattern");
+      if (flag && inputPattern) {
+        flag = inputField.value.startsWith(inputPattern);
       }
 
       if (!flag) {
@@ -83,12 +93,14 @@ window.addEventListener("load", () => {
           const errorEl = nextEl.nextElementSibling;
           if (flag) {
             nextEl.classList.remove("error");
+            nextEl.classList.add("selected");
             if (errorEl) {
               errorEl.classList.remove("error-active");
               errorEl.classList.add("no-error");
             }
           } else {
             nextEl.classList.add("error");
+            nextEl.classList.remove("selected");
             if (errorEl) {
               errorEl.classList.add("error-active");
               errorEl.classList.remove("no-error");
@@ -113,10 +125,12 @@ window.addEventListener("load", () => {
           const errorEl = nextEl;
           if (flag) {
             selectField.classList.remove("error");
+            selectField.classList.add("selected");
             errorEl.classList.remove("error-active");
             errorEl.classList.add("no-error");
           } else {
             selectField.classList.add("error");
+            selectField.classList.remove("selected");
             errorEl.classList.add("error-active");
             errorEl.classList.remove("no-error");
           }
@@ -143,11 +157,13 @@ window.addEventListener("load", () => {
       // changing UI as per validation result
       const errorEl = radioGrp.querySelector(`div[error-label="Radio"]`);
       if (flag) {
+        radioBtns.forEach((radioBtn) => radioBtn.classList.remove("error"));
         if (errorEl) {
           errorEl.classList.remove("error-active");
           errorEl.classList.add("no-error");
         }
       } else {
+        radioBtns.forEach((radioBtn) => radioBtn.classList.add("error"));
         if (errorEl) {
           errorEl.classList.add("error-active");
           errorEl.classList.remove("no-error");
@@ -176,16 +192,15 @@ window.addEventListener("load", () => {
       }
 
       // changing UI as per validation result
-      const labelEl = checkboxEl.parentElement;
       const errorEl = checkboxEl?.parentElement?.nextElementSibling;
       if (flag) {
-        if (labelEl) labelEl.classList.remove("error");
+        checkboxEl.classList.remove("error");
         if (errorEl) {
           errorEl.classList.remove("error-active");
           errorEl.classList.add("no-error");
         }
       } else {
-        if (labelEl) labelEl.classList.add("error");
+        checkboxEl.classList.add("error");
         if (errorEl) {
           errorEl.classList.add("error-active");
           errorEl.classList.remove("no-error");
@@ -197,38 +212,41 @@ window.addEventListener("load", () => {
     const textAreas =
       formEl.querySelectorAll<HTMLInputElement>("textarea.w-input");
     for (const textArea of textAreas) {
-      textArea.addEventListener("input", () => {
-        let flag = true;
-        if (
-          textArea.hasAttribute("required") &&
-          textArea.getAttribute("required") !== "false" &&
-          !textArea.value
-        ) {
-          flag = false;
-        }
+      let flag = true;
+      if (
+        textArea.hasAttribute("required") &&
+        textArea.getAttribute("required") !== "false" &&
+        !textArea.value
+      ) {
+        flag = false;
+      }
 
-        if (!flag) {
-          state[index] = false;
-          if (!onSubmit) return;
-        }
+      if (!flag) {
+        state[index] = false;
+        if (!onSubmit) return;
+      }
 
-        // changing UI as per validation result
-        const errorEl = textArea.nextElementSibling;
-        if (flag) {
-          textArea.classList.remove("error");
-          if (errorEl) {
-            errorEl.classList.remove("error-active");
-            errorEl.classList.add("no-error");
-          }
-        } else {
-          textArea.classList.add("error");
-          if (errorEl) {
-            errorEl.classList.add("error-active");
-            errorEl.classList.remove("no-error");
-          }
+      // changing UI as per validation result
+      const errorEl = textArea.nextElementSibling;
+      if (flag) {
+        textArea.classList.remove("error");
+        if (errorEl?.getAttribute("error-label") === "message") {
+          errorEl.classList.remove("error-active");
+          errorEl.classList.add("no-error");
         }
-      });
+      } else {
+        textArea.classList.add("error");
+        if (errorEl?.getAttribute("error-label") === "message") {
+          errorEl.classList.add("error-active");
+          errorEl.classList.remove("no-error");
+        }
+      }
     }
+
+    formEl
+      .querySelector(`input[type="submit"]`)
+      ?.classList?.[state[index] ? "add" : "remove"]("filled-form");
+    formEl.querySelector(`input[type="submit"]`)?.classList?.remove("no-error");
   };
 
   for (let i = 0; i < formEls.length; i++) {
@@ -259,6 +277,12 @@ window.addEventListener("load", () => {
           const re =
             /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/g;
           flag = re.test(inputField.value);
+        }
+
+        // handling patterns
+        const inputPattern = inputField.getAttribute("pattern");
+        if (flag && inputPattern) {
+          flag = inputField.value.startsWith(inputPattern);
         }
 
         // changing UI as per validation result
@@ -302,12 +326,14 @@ window.addEventListener("load", () => {
             const errorEl = nextEl.nextElementSibling;
             if (flag) {
               nextEl.classList.remove("error");
+              nextEl.classList.add("selected");
               if (errorEl) {
                 errorEl.classList.remove("error-active");
                 errorEl.classList.add("no-error");
               }
             } else {
               nextEl.classList.add("error");
+              nextEl.classList.remove("selected");
               if (errorEl) {
                 errorEl.classList.add("error-active");
                 errorEl.classList.remove("no-error");
@@ -331,10 +357,12 @@ window.addEventListener("load", () => {
             const errorEl = nextEl;
             if (flag) {
               selectField.classList.remove("error");
+              selectField.classList.add("selected");
               errorEl.classList.remove("error-active");
               errorEl.classList.add("no-error");
             } else {
               selectField.classList.add("error");
+              selectField.classList.remove("selected");
               errorEl.classList.add("error-active");
               errorEl.classList.remove("no-error");
             }
@@ -358,6 +386,7 @@ window.addEventListener("load", () => {
               errorEl.classList.remove("error-active");
               errorEl.classList.add("no-error");
             }
+            radioBtns.forEach((radioBtn) => radioBtn.classList.remove("error"));
           }
 
           validateForm(formEl, i);
@@ -382,16 +411,15 @@ window.addEventListener("load", () => {
         }
 
         // changing UI as per validation result
-        const labelEl = checkboxEl.parentElement;
         const errorEl = checkboxEl?.parentElement?.nextElementSibling;
         if (flag) {
-          if (labelEl) labelEl.classList.remove("error");
+          checkboxEl.classList.remove("error");
           if (errorEl) {
             errorEl.classList.remove("error-active");
             errorEl.classList.add("no-error");
           }
         } else {
-          if (labelEl) labelEl.classList.add("error");
+          checkboxEl.classList.add("error");
           if (errorEl) {
             errorEl.classList.add("error-active");
             errorEl.classList.remove("no-error");
@@ -420,13 +448,13 @@ window.addEventListener("load", () => {
         const errorEl = textArea.nextElementSibling;
         if (flag) {
           textArea.classList.remove("error");
-          if (errorEl) {
+          if (errorEl?.getAttribute("error-label") === "message") {
             errorEl.classList.remove("error-active");
             errorEl.classList.add("no-error");
           }
         } else {
           textArea.classList.add("error");
-          if (errorEl) {
+          if (errorEl?.getAttribute("error-label") === "message") {
             errorEl.classList.add("error-active");
             errorEl.classList.remove("no-error");
           }
