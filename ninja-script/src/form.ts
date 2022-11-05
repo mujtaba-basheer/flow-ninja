@@ -262,7 +262,7 @@ window.addEventListener("load", () => {
       `input.w-input:not([type="submit"])`
     );
     for (const inputField of inputFields) {
-      inputField.addEventListener("input", () => {
+      const inputValidator = () => {
         let flag = true;
         if (
           inputField.hasAttribute("required") &&
@@ -302,7 +302,19 @@ window.addEventListener("load", () => {
         }
 
         validateForm(formEl, i);
-      });
+      };
+      const checkingStrategy = inputField.getAttribute("trigger");
+      if (checkingStrategy) {
+        inputField.addEventListener("focusin", () => {
+          const errorEl = inputField.nextElementSibling;
+          inputField.classList.remove("error");
+          if (errorEl) {
+            errorEl.classList.remove("error-active");
+            errorEl.classList.add("no-error");
+          }
+        });
+      }
+      inputField.addEventListener(checkingStrategy || "input", inputValidator);
     }
 
     // managing select dropdowns

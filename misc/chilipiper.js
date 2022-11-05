@@ -1,39 +1,3 @@
-(function () {
-  var didInit = false;
-
-  function initMunchkin() {
-    if (didInit === false) {
-      didInit = true;
-      Munchkin.init("518-RKL-392");
-    }
-  }
-  var s = document.createElement("script");
-  s.type = "text/javascript";
-  s.async = true;
-  s.src = "//munchkin.marketo.net/munchkin.js";
-  s.onload = initMunchkin;
-  s.onreadystatechange = function () {
-    if (this.readyState == "complete" || this.readyState == "loaded") {
-      initMunchkin();
-    }
-  };
-  document.getElementsByTagName("head")[0].appendChild(s);
-})();
-
-const chilipiperSubmit = (lead) => {
-  return new Promise((res, rej) => {
-    ChiliPiper.submit("upwork", "inbound-router", {
-      lead,
-      onSuccess: function () {
-        res(null);
-      },
-      onError: function () {
-        rej(null);
-      },
-    });
-  });
-};
-
 var onSuccessSubmit = async function () {
   function format(value) {
     var hours = parseInt(value, 10);
@@ -130,19 +94,19 @@ var onSuccessSubmit = async function () {
     switch (String(kvlData.numberOfEmployees)) {
       default:
       case "25":
-        numberOfEmployees = "1-49";
+        numberOfEmployees = "3";
         break;
       case "100":
-        numberOfEmployees = "50-149";
+        numberOfEmployees = "4";
         break;
       case "175":
-        numberOfEmployees = "150-249";
+        numberOfEmployees = "4";
         break;
       case "750":
-        numberOfEmployees = "250-999";
+        numberOfEmployees = "5";
         break;
       case "1000":
-        numberOfEmployees = "1000+";
+        numberOfEmployees = "6";
         break;
     }
     try {
@@ -161,43 +125,12 @@ var onSuccessSubmit = async function () {
         window.localStorage.setItem("marketo-ent-kvl", data.KVLKey);
       }
 
-      const cp_countries = [
-        "United States",
-        "Australia",
-        "United Kingdom",
-        "Canada",
-        "Israel",
-      ];
-      if (
-        numberOfEmployees === "250-999" ||
-        numberOfEmployees === "1000+" ||
-        (numberOfEmployees === "150-249" &&
-          cp_countries.includes(kvlData?.Country))
-      ) {
-        try {
-          await chilipiperSubmit({
-            map: true,
-            ...kvlData,
-            numberOfEmployees: this.numberOfEmployeesUpdated.id,
-          });
-          var SELECT_URL = "enterprise/contact-us/thank-you-2";
-          var MARKETPLACE_URL = "enterprise/contact-us/thank-you-3";
-          var SELECT_QUALIFIED_COUNTRIES = ["US", "CA", "GB", "AU", "IL"];
-          if (
-            ["750", "1000"].indexOf(this.numberOfEmployeesUpdated.id) !== -1
-          ) {
-            window.location.pathname = SELECT_URL;
-          } else if (
-            SELECT_QUALIFIED_COUNTRIES.includes(
-              this.countriesService.getIso(this.countryHidden.id)
-            )
-          ) {
-            window.location.pathname = SELECT_URL;
-          } else {
-            window.location.pathname = MARKETPLACE_URL;
-          }
-        } catch (error) {}
-      }
+      ChiliPiper.submit("upwork", "inbound-router", {
+        lead: {
+          ...kvlData,
+          numberOfEmployees,
+        },
+      });
     } catch (err) {
       console.error(`[VS Marketo] Could not save to KVL: ${err}`);
     }
@@ -206,7 +139,7 @@ var onSuccessSubmit = async function () {
   var SELECT_URL = "enterprise/contact-us/thank-you-2";
   var MARKETPLACE_URL = "enterprise/contact-us/thank-you-3";
   var SELECT_QUALIFIED_COUNTRIES = ["US", "CA", "GB", "AU", "IL"];
-  if (["750", "1000"].indexOf(this.numberOfEmployeesUpdated.id) !== -1) {
+  if (["175", "750", "1000"].indexOf(this.numberOfEmployeesUpdated.id) !== -1) {
     window.location.pathname = ENT_URL;
   } else if (
     SELECT_QUALIFIED_COUNTRIES.includes(

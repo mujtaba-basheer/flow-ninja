@@ -5,3 +5,4 @@ tsconfig.json
 package-lock.json
 /prodyna/lambda/node_modules
 /filip/node_modules
+/gridcognition/lambda/node_modules

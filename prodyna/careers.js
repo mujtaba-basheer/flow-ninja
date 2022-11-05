@@ -24,14 +24,24 @@ window.addEventListener("load", async () => {
       h2El.innerHTML = `${total} Open Positions<br />in ${locations.total} Locations`;
 
       const h3Els = containerEl.querySelectorAll("h3");
+      const categories = [
+        "Software Engineering",
+        "Design",
+        "Internal Positions",
+      ];
       for (let i = 0; i < h3Els.length; i++) {
         const h3El = h3Els[i];
-        if (departments.details[i]) {
-          const { name, openPositions } = departments.details[i];
-          h3El.textContent = `${openPositions} Job${
-            openPositions > 1 ? "s" : ""
-          } for ${name}`;
+        const detail = departments.details.find(
+          (x) => x.name === categories[i]
+        );
+        let name = categories[i],
+          openPositions = 0;
+        if (detail) {
+          openPositions = detail.openPositions;
         }
+        h3El.textContent = `${openPositions} Job${
+          openPositions > 1 ? "s" : ""
+        } for ${name}`;
       }
     }
   } catch (error) {
