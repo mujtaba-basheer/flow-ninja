@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    .dummy {
+      height: 120vh;
+    }
+
+    .container {
+      margin: 4em 0;
+      width: 663px;
+      height: 210px;
+      outline: 1px solid red;
+    }
+
+    svg path,
+    circle {
+      stroke: #79CBCB;
+      stroke-opacity: 1;
+      fill: none;
+      stroke-width: 60px;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/walkway.js/src/walkway.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.3/gsap.min.js"
+    integrity="sha512-gmwBmiTVER57N3jYS3LinA9eb8aHrJua5iQD7yqYCKa5x6Jjc7VDVaEA0je0Lu0bP9j7tEjV3+1qUm6loO99Kw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.3/ScrollTrigger.min.js"
+    integrity="sha512-tHvUcUQYi35zApvAa5TNR3fNhBQkVtkmWKfacnpxmix4/VTGz1lGjIVyLMp7gLgAvg+aKJjnVKokXJNS5GZ+/g=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <title>SVG Animation</title>
+</head>
+
+<body>
+  <div class="dummy">scroll down</div>
+  <div class="container">
+    <svg id="svg" width="663" height="210" viewBox="0 0 663 210" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <clipPath id="clip-path">
+          <path id="clip" d="
+            M 0 0
+            L 560 0
+            L 560 150
+            L 600 180
+            L 560 210
+            L 0 210
+            Z
+            " />
+        </clipPath>
+      </defs>
+      <path opacity="0.3" d="
+        M 0 30
+        L 400 30
+        A 37.5 37.5, 0 1 1 ,400 105
+        L 200 105
+        A 37.5 37.5, 0 0 0 ,200 180
+        L 600 180
+        " clip-path="url(#clip-path)" />
+    </svg>
+  </div>
+
+  <script>
+    window.addEventListener("load", () => {
+      const options = {
+        selector: "#svg",
+        duration: 1500
+      };
+      const svg = new Walkway(options);
+      const callback = () => {
+        console.log("completed!");
+      }
+
+      gsap.registerPlugin(ScrollTrigger);
+      ScrollTrigger.create({
+        trigger: ".container",
+        start: "bottom bottom",
+        // endTrigger: "#otherID",
+        // end: "bottom 50%+=100px",
+        onEnter: () => svg.draw(callback),
+        onLeave: () => {
+          console.log("left");
+          svg.redraw();
+        },
+        markers: true
+      });
+
+      // setTimeout(() => svg.draw(callback), 1000);
+    });
+  </script>
+</body>
+
+</html>

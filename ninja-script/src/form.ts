@@ -40,6 +40,12 @@ window.addEventListener("load", () => {
         flag = re.test(inputField.value);
       }
 
+      // handling tel/mobile inputs
+      if (flag && inputField.type === "tel") {
+        const re = /^(\+|)[0-9][-0-9\s]*[0-9]$/g;
+        flag = re.test(inputField.value);
+      }
+
       // handling patterns
       const inputPattern = inputField.getAttribute("pattern");
       if (flag && inputPattern) {
@@ -52,7 +58,9 @@ window.addEventListener("load", () => {
       }
 
       // changing UI as per validation result
-      const errorEl = inputField.nextElementSibling;
+      const errorEl = formEl.querySelector(
+        `div[error-label="${inputField.id}"]`
+      );
       if (flag) {
         inputField.classList.remove("error");
         if (errorEl) {
@@ -227,7 +235,7 @@ window.addEventListener("load", () => {
       }
 
       // changing UI as per validation result
-      const errorEl = textArea.nextElementSibling;
+      const errorEl = formEl.querySelector(`div[error-label="${textArea.id}"]`);
       if (flag) {
         textArea.classList.remove("error");
         if (errorEl?.getAttribute("error-label") === "message") {
@@ -263,6 +271,7 @@ window.addEventListener("load", () => {
     );
     for (const inputField of inputFields) {
       const inputValidator = () => {
+        console.log("here: inputValidator");
         let flag = true;
         if (
           inputField.hasAttribute("required") &&
@@ -279,6 +288,12 @@ window.addEventListener("load", () => {
           flag = re.test(inputField.value);
         }
 
+        // handling tel/mobile inputs
+        if (flag && inputField.type === "tel") {
+          const re = /^(\+|)[0-9][-0-9\s]*[0-9]$/g;
+          flag = re.test(inputField.value);
+        }
+
         // handling patterns
         const inputPattern = inputField.getAttribute("pattern");
         if (flag && inputPattern) {
@@ -286,7 +301,10 @@ window.addEventListener("load", () => {
         }
 
         // changing UI as per validation result
-        const errorEl = inputField.nextElementSibling;
+        const errorEl = formEl.querySelector(
+          `div[error-label="${inputField.id}"]`
+        );
+        console.log("here", { flag, errorEl });
         if (flag) {
           inputField.classList.remove("error");
           if (errorEl) {
@@ -306,7 +324,9 @@ window.addEventListener("load", () => {
       const checkingStrategy = inputField.getAttribute("trigger");
       if (checkingStrategy) {
         inputField.addEventListener("focusin", () => {
-          const errorEl = inputField.nextElementSibling;
+          const errorEl = formEl.querySelector(
+            `div[error-label="${inputField.id}"]`
+          );
           inputField.classList.remove("error");
           if (errorEl) {
             errorEl.classList.remove("error-active");
@@ -457,7 +477,9 @@ window.addEventListener("load", () => {
         }
 
         // changing UI as per validation result
-        const errorEl = textArea.nextElementSibling;
+        const errorEl = formEl.querySelector(
+          `div[error-label="${textArea.id}"]`
+        );
         if (flag) {
           textArea.classList.remove("error");
           if (errorEl?.getAttribute("error-label") === "message") {

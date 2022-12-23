@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      font-family: inherit;
+    }
+
+    body {
+      font-family: Ogg, sans-serif;
+    }
+
+    @font-face {
+      font-family: 'Ogg';
+      src: url('https://assets.website-files.com/5e43ed0b04c33630b256cf8d/616022fb4dd87e9991cd5d74_Ogg-Regular.woff') format('woff');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    .dummy {
+      height: 120vh;
+    }
+
+    .container {
+      margin: 4em 0;
+      width: 210px;
+      height: 210px;
+      background-color: #dee3ff;
+      border-radius: 50%;
+      position: relative;
+
+      display: grid;
+      place-items: center;
+    }
+
+    .container p span {
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    svg {
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+
+    svg path,
+    circle {
+      stroke: #79CBCB;
+      stroke-opacity: 1;
+      fill: none;
+      stroke-width: 10px;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/walkway.js/src/walkway.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.3/gsap.min.js"
+    integrity="sha512-gmwBmiTVER57N3jYS3LinA9eb8aHrJua5iQD7yqYCKa5x6Jjc7VDVaEA0je0Lu0bP9j7tEjV3+1qUm6loO99Kw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.3/ScrollTrigger.min.js"
+    integrity="sha512-tHvUcUQYi35zApvAa5TNR3fNhBQkVtkmWKfacnpxmix4/VTGz1lGjIVyLMp7gLgAvg+aKJjnVKokXJNS5GZ+/g=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <title>SVG Animation</title>
+</head>
+
+<body>
+  <div class="dummy">scroll down</div>
+  <div class="container">
+    <p>Why was <span>this year</span><br />so special?</p>
+    <svg id="svg" width="210" height="210" viewBox="0 0 210 210" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path opacity="1" d="
+        M 105 5
+        A 100 100, 0 1 1 ,105 205
+        " />
+    </svg>
+  </div>
+
+  <script>
+    window.addEventListener("load", () => {
+      const options = {
+        selector: "#svg",
+        duration: 1500
+      };
+      const svg = new Walkway(options);
+      const callback = () => {
+        console.log("completed!");
+      }
+
+      gsap.registerPlugin(ScrollTrigger);
+      ScrollTrigger.create({
+        trigger: ".container",
+        start: "bottom bottom",
+        // endTrigger: "#otherID",
+        // end: "bottom 50%+=100px",
+        onEnter: () => svg.draw(callback),
+        onLeave: () => {
+          console.log("left");
+          svg.redraw();
+        },
+        markers: true
+      });
+
+      // setTimeout(() => svg.draw(callback), 1000);
+    });
+  </script>
+</body>
+
+</html>

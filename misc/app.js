@@ -11,17 +11,23 @@ const creds = new AWS.Credentials({
 
 const S3 = new AWS.S3({ credentials: creds });
 
-const filesToUpload = ["script"];
+const filesToUpload = ["svg-anim"];
 
 const returnPromise = (file) => {
   return new Promise((res, rej) => {
     S3.upload(
       {
         Bucket: "flow-ninja-assets",
-        Key: `misc/${file}.js`,
-        Body: fs.createReadStream(`misc/${file}.js`),
+
+        // Key: `misc/${file}.js`,
+        // Body: fs.createReadStream(`misc/${file}.js`),
+        // ContentType: "application/javascript",
+
+        Key: `misc/${file}.html`,
+        Body: fs.createReadStream(`misc/${file}.html`),
+        ContentType: "text/html",
+
         ACL: "public-read",
-        ContentType: "application/javascript",
       },
       (err, data) => {
         if (err) rej(err);
@@ -35,20 +41,20 @@ const returnPromise = (file) => {
   });
 };
 
-for (const file of filesToUpload) {
-  (async () => {
-    const inputCode = fs.readFileSync(`misc/${file}.js`, {
-      encoding: "utf8",
-    });
-    const outputCode = minify(inputCode, {}).code;
-    fs.writeFileSync(`misc/${file}.min.js`, outputCode, {
-      encoding: "utf8",
-    });
-    await returnPromise(file + ".min");
-  })();
-}
 // for (const file of filesToUpload) {
 //   (async () => {
-//     await returnPromise(file);
+//     const inputCode = fs.readFileSync(`misc/${file}.js`, {
+//       encoding: "utf8",
+//     });
+//     const outputCode = minify(inputCode, {}).code;
+//     fs.writeFileSync(`misc/${file}.min.js`, outputCode, {
+//       encoding: "utf8",
+//     });
+//     await returnPromise(file + ".min");
 //   })();
 // }
+for (const file of filesToUpload) {
+  (async () => {
+    await returnPromise(file);
+  })();
+}

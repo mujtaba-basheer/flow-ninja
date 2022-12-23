@@ -10,7 +10,7 @@ const creds = new AWS.Credentials({
     secretAccessKey: process.env.S3SecretAccessKey,
 });
 const S3 = new AWS.S3({ credentials: creds });
-const filesToUpload = ["core"];
+const filesToUpload = ["form"];
 function returnPromise(file) {
     return new Promise((res, rej) => {
         S3.upload({

@@ -23,6 +23,11 @@ window.addEventListener("load", () => {
                 const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/g;
                 flag = re.test(inputField.value);
             }
+            // handling tel/mobile inputs
+            if (flag && inputField.type === "tel") {
+                const re = /^(\+|)[0-9][-0-9\s]*[0-9]$/g;
+                flag = re.test(inputField.value);
+            }
             // handling patterns
             const inputPattern = inputField.getAttribute("pattern");
             if (flag && inputPattern) {
@@ -34,7 +39,7 @@ window.addEventListener("load", () => {
                     return;
             }
             // changing UI as per validation result
-            const errorEl = inputField.nextElementSibling;
+            const errorEl = formEl.querySelector(`div[error-label="${inputField.id}"]`);
             if (flag) {
                 inputField.classList.remove("error");
                 if (errorEl) {
@@ -192,7 +197,7 @@ window.addEventListener("load", () => {
                     return;
             }
             // changing UI as per validation result
-            const errorEl = textArea.nextElementSibling;
+            const errorEl = formEl.querySelector(`div[error-label="${textArea.id}"]`);
             if (flag) {
                 textArea.classList.remove("error");
                 if ((errorEl === null || errorEl === void 0 ? void 0 : errorEl.getAttribute("error-label")) === "message") {
@@ -222,6 +227,7 @@ window.addEventListener("load", () => {
         const inputFields = formEl.querySelectorAll(`input.w-input:not([type="submit"])`);
         for (const inputField of inputFields) {
             const inputValidator = () => {
+                console.log("here: inputValidator");
                 let flag = true;
                 if (inputField.hasAttribute("required") &&
                     inputField.getAttribute("required") !== "false" &&
@@ -233,13 +239,19 @@ window.addEventListener("load", () => {
                     const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/g;
                     flag = re.test(inputField.value);
                 }
+                // handling tel/mobile inputs
+                if (flag && inputField.type === "tel") {
+                    const re = /^(\+|)[0-9][-0-9\s]*[0-9]$/g;
+                    flag = re.test(inputField.value);
+                }
                 // handling patterns
                 const inputPattern = inputField.getAttribute("pattern");
                 if (flag && inputPattern) {
                     flag = inputField.value.startsWith(inputPattern);
                 }
                 // changing UI as per validation result
-                const errorEl = inputField.nextElementSibling;
+                const errorEl = formEl.querySelector(`div[error-label="${inputField.id}"]`);
+                console.log("here", { flag, errorEl });
                 if (flag) {
                     inputField.classList.remove("error");
                     if (errorEl) {
@@ -259,7 +271,7 @@ window.addEventListener("load", () => {
             const checkingStrategy = inputField.getAttribute("trigger");
             if (checkingStrategy) {
                 inputField.addEventListener("focusin", () => {
-                    const errorEl = inputField.nextElementSibling;
+                    const errorEl = formEl.querySelector(`div[error-label="${inputField.id}"]`);
                     inputField.classList.remove("error");
                     if (errorEl) {
                         errorEl.classList.remove("error-active");
@@ -389,7 +401,7 @@ window.addEventListener("load", () => {
                     flag = false;
                 }
                 // changing UI as per validation result
-                const errorEl = textArea.nextElementSibling;
+                const errorEl = formEl.querySelector(`div[error-label="${textArea.id}"]`);
                 if (flag) {
                     textArea.classList.remove("error");
                     if ((errorEl === null || errorEl === void 0 ? void 0 : errorEl.getAttribute("error-label")) === "message") {
