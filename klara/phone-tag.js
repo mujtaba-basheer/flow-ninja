@@ -76,10 +76,10 @@ window.addEventListener("load", function () {
     {
       // Phone tag cost
 
-      let outbound_calls_per_day = 400,
-        calls_connected = 0.3,
-        time_per_call = 3,
-        hourly_wage_calling = 15;
+      let outbound_calls_per_day = 0,
+        calls_connected = 0.0,
+        time_per_call = 1,
+        hourly_wage_calling = 10;
 
       const updatePhoneTagCost = () => {
         let res = calculatePhoneTagCost(
@@ -104,19 +104,19 @@ window.addEventListener("load", function () {
       };
 
       $("#phonePractice").on("input", function () {
-        outbound_calls_per_day = getNum($(this), 400);
+        outbound_calls_per_day = getNum($(this), 0);
         updatePhoneTagCost();
       });
       $("#speakingWithPatient").on("input", function () {
-        calls_connected = getNum($(this), 30) / 100;
+        calls_connected = getNum($(this), 0) / 100;
         updatePhoneTagCost();
       });
       $("#callLength-2").on("input", function () {
-        time_per_call = getNum($(this), 3);
+        time_per_call = getNum($(this), 1);
         updatePhoneTagCost();
       });
       $("#staffWage").on("input", function () {
-        hourly_wage_calling = getNum($(this), 15);
+        hourly_wage_calling = getNum($(this), 10);
         updatePhoneTagCost();
       });
     }

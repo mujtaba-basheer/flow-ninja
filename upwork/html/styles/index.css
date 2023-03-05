@@ -1,0 +1,54 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  min-height: 100vh;
+}
+
+.container {
+  min-height: 100vh;
+  background-color: rgb(235, 235, 235);
+  position: relative;
+}
+
+.container svg {
+  width: 950px;
+  height: 3600px;
+  position: absolute;
+  z-index: 5;
+
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.container svg path,
+.container svg circle {
+  stroke-width: 5px;
+}
+
+.container svg path:not([data-ignore="true"]) {
+  stroke: red;
+}
+
+.container svg path[data-ignore="true"] {
+  stroke-dasharray: 5 1 5 1;
+}
+
+.section {
+  height: 600px;
+  background-color: black;
+  display: grid;
+  place-items: center;
+
+  font-size: 2rem;
+  font-weight: bold;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  color: #ffffff;
+}
+
+.section:nth-child(even) {
+  background-color: rgb(255, 255, 0);
+}

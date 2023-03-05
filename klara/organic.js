@@ -104,10 +104,10 @@ window.addEventListener("load", function () {
     {
       // Phone tag cost
 
-      let outbound_calls_per_day = 400,
-        calls_connected = 0.3,
-        time_per_call = 3,
-        hourly_wage_calling = 15;
+      let outbound_calls_per_day = 0,
+        calls_connected = 0.0,
+        time_per_call = 1,
+        hourly_wage_calling = 10;
 
       const updatePhoneTagCost = () => {
         let res = calculatePhoneTagCost(
@@ -132,23 +132,23 @@ window.addEventListener("load", function () {
       };
 
       $("#phoneProviders").on("input", function () {
-        no_of_providers = getNum($(this), 20);
+        no_of_providers = getNum($(this), 1);
         updatePhoneTagCost();
       });
       $("#phonePractice").on("input", function () {
-        outbound_calls_per_day = getNum($(this), 400);
+        outbound_calls_per_day = getNum($(this), 0);
         updatePhoneTagCost();
       });
       $("#speakingWithPatient").on("input", function () {
-        calls_connected = getNum($(this), 30) / 100;
+        calls_connected = getNum($(this), 0) / 100;
         updatePhoneTagCost();
       });
       $("#callLength").on("input", function () {
-        time_per_call = getNum($(this), 3);
+        time_per_call = getNum($(this), 1);
         updatePhoneTagCost();
       });
       $("#staffWage").on("input", function () {
-        hourly_wage_calling = getNum($(this), 15);
+        hourly_wage_calling = getNum($(this), 10);
         updatePhoneTagCost();
       });
     }
@@ -156,10 +156,10 @@ window.addEventListener("load", function () {
     {
       // Abandoned calls cost
 
-      let inbound_calls_per_day = 400,
-        calls_abandoned = 0.1,
-        percent_calls_scheduling = 0.35,
-        rev_per_appt = 150;
+      let inbound_calls_per_day = 0,
+        calls_abandoned = 0.0,
+        percent_calls_scheduling = 0.0,
+        rev_per_appt = 100;
 
       const updateAbandonedCallsCost = () => {
         let res = calculateAbandonedCallsCost(
@@ -184,19 +184,19 @@ window.addEventListener("load", function () {
       };
 
       $("#abandonedPractice").on("input", function () {
-        inbound_calls_per_day = getNum($(this), 400);
+        inbound_calls_per_day = getNum($(this), 0);
         updateAbandonedCallsCost();
       });
       $("#abandonedPerecentage").on("input", function () {
-        calls_abandoned = getNum($(this), 10) / 100;
+        calls_abandoned = getNum($(this), 0) / 100;
         updateAbandonedCallsCost();
       });
       $("#patientScheduling").on("input", function () {
-        percent_calls_scheduling = getNum($(this), 35) / 100;
+        percent_calls_scheduling = getNum($(this), 0) / 100;
         updateAbandonedCallsCost();
       });
       $("#abandonedRevenue").on("input", function () {
-        rev_per_appt = getNum($(this), 150);
+        rev_per_appt = getNum($(this), 100);
         updateAbandonedCallsCost();
       });
     }
@@ -204,9 +204,9 @@ window.addEventListener("load", function () {
     {
       // No-show cost
 
-      let appts_per_day = 200,
-        no_shows = 0.2,
-        rev_per_appt = 150;
+      let appts_per_day = 0,
+        no_shows = 0.0,
+        rev_per_appt = 100;
 
       const updateNoShowCost = () => {
         let res = calculateNoShowCost(appts_per_day, no_shows, rev_per_appt);
@@ -226,15 +226,15 @@ window.addEventListener("load", function () {
       };
 
       $("#noShowsPatients").on("input", function () {
-        appts_per_day = getNum($(this), 200);
+        appts_per_day = getNum($(this), 0);
         updateNoShowCost();
       });
       $("#noShows").on("input", function () {
-        no_shows = getNum($(this), 20) / 100;
+        no_shows = getNum($(this), 0) / 100;
         updateNoShowCost();
       });
       $("#revenue").on("input", function () {
-        no_shows = getNum($(this), 20) / 100;
+        rev_per_appt = getNum($(this), 100);
         updateNoShowCost();
       });
     }

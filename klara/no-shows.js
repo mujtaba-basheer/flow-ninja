@@ -53,9 +53,9 @@ window.addEventListener("load", function () {
     {
       // No-show cost
 
-      let appts_per_day = 200,
-        no_shows = 0.2,
-        rev_per_appt = 150;
+      let appts_per_day = 0,
+        no_shows = 0.0,
+        rev_per_appt = 100;
 
       const updateNoShowCost = () => {
         let res = calculateNoShowCost(appts_per_day, no_shows, rev_per_appt);
@@ -75,15 +75,15 @@ window.addEventListener("load", function () {
       };
 
       $("#noShowsPatients").on("input", function () {
-        appts_per_day = getNum($(this), 200);
+        appts_per_day = getNum($(this), 0);
         updateNoShowCost();
       });
       $("#noShows").on("input", function () {
-        no_shows = getNum($(this), 20) / 100;
+        no_shows = getNum($(this), 0) / 100;
         updateNoShowCost();
       });
       $("#revenue").on("input", function () {
-        no_shows = getNum($(this), 20) / 100;
+        rev_per_appt = getNum($(this), 100);
         updateNoShowCost();
       });
     }

@@ -1,6 +1,14 @@
 window.addEventListener("load", () => {
     const formEls = document.querySelectorAll(`form[form-validation="true"]`);
     const state = new Array(formEls.length);
+    const isInViewport = (element) => {
+        const rect = element.getBoundingClientRect();
+        return (rect.top >= 0 &&
+            rect.left >= 0 &&
+            rect.bottom <=
+                (window.innerHeight || document.documentElement.clientHeight) &&
+            rect.right <= (window.innerWidth || document.documentElement.clientWidth));
+    };
     const validateForm = (formEl, index, onSubmit) => {
         var _a, _b, _c, _d, _e, _f, _g;
         state[index] = true;
@@ -10,6 +18,9 @@ window.addEventListener("load", () => {
         const inputFields = formEl.querySelectorAll(`input.w-input:not([type="submit"])`);
         for (const inputField of inputFields) {
             let flag = true;
+            // TODO: Remove this temp. hack
+            if (inputField.id === "Country")
+                continue;
             if (inputField.hasAttribute("required") &&
                 inputField.getAttribute("required") !== "false" &&
                 !inputField.value) {
@@ -25,13 +36,20 @@ window.addEventListener("load", () => {
             }
             // handling tel/mobile inputs
             if (flag && inputField.type === "tel") {
-                const re = /^(\+|)[0-9][-0-9\s]*[0-9]$/g;
-                flag = re.test(inputField.value);
+                const re1 = /^(\+|)[0-9][-0-9\s]*[0-9]$/g;
+                const re2 = /^(\+)[0-9]+$/g;
+                flag = re1.test(inputField.value) || re2.test(inputField.value);
             }
+            // console.log({ flag, el: inputField });
             // handling patterns
-            const inputPattern = inputField.getAttribute("pattern");
+            let inputPattern = inputField.getAttribute("data-pattern");
             if (flag && inputPattern) {
                 flag = inputField.value.startsWith(inputPattern);
+            }
+            inputPattern = inputField.getAttribute("pattern");
+            if (flag && inputPattern) {
+                const re = new RegExp(inputPattern);
+                flag = re.test(inputField.value);
             }
             if (!flag) {
                 state[index] = false;
@@ -135,7 +153,7 @@ window.addEventListener("load", () => {
                     return;
             }
             // changing UI as per validation result
-            const errorEl = radioGrp.querySelector(`div[error-label="Radio"]`);
+            const errorEl = radioGrp.querySelector(`div[error-label="${radioGrp.id}"]`);
             if (flag) {
                 radioBtns.forEach((radioBtn) => radioBtn.classList.remove("error"));
                 if (errorEl) {
@@ -219,7 +237,7 @@ window.addEventListener("load", () => {
     };
     for (let i = 0; i < formEls.length; i++) {
         const formEl = formEls[i];
-        formEl.reset();
+        // formEl.reset();
         state[i] = false;
         // removing HTML tooltips
         formEl.setAttribute("novalidate", "");
@@ -227,7 +245,7 @@ window.addEventListener("load", () => {
         const inputFields = formEl.querySelectorAll(`input.w-input:not([type="submit"])`);
         for (const inputField of inputFields) {
             const inputValidator = () => {
-                console.log("here: inputValidator");
+                // console.log("here: inputValidator");
                 let flag = true;
                 if (inputField.hasAttribute("required") &&
                     inputField.getAttribute("required") !== "false" &&
@@ -245,13 +263,13 @@ window.addEventListener("load", () => {
                     flag = re.test(inputField.value);
                 }
                 // handling patterns
-                const inputPattern = inputField.getAttribute("pattern");
+                const inputPattern = inputField.getAttribute("data-pattern");
                 if (flag && inputPattern) {
                     flag = inputField.value.startsWith(inputPattern);
                 }
                 // changing UI as per validation result
                 const errorEl = formEl.querySelector(`div[error-label="${inputField.id}"]`);
-                console.log("here", { flag, errorEl });
+                // console.log("here", { flag, errorEl });
                 if (flag) {
                     inputField.classList.remove("error");
                     if (errorEl) {
@@ -349,7 +367,7 @@ window.addEventListener("load", () => {
             for (const radioBtn of radioBtns) {
                 radioBtn.addEventListener("change", () => {
                     if (radioBtn.checked) {
-                        const errorEl = radioGrp.querySelector(`div[error-label="Radio"]`);
+                        const errorEl = radioGrp.querySelector(`div[error-label="${radioGrp.id}"]`);
                         if (errorEl) {
                             errorEl.classList.remove("error-active");
                             errorEl.classList.add("no-error");
@@ -425,7 +443,21 @@ window.addEventListener("load", () => {
                 ev.preventDefault();
                 ev.stopImmediatePropagation();
                 ev.stopPropagation();
+                // console.log("Invalid!");
                 validateForm(formEl, i, true);
+                const firstErrorEl = formEl.querySelector(`.error-active[error-label]`);
+                const errorParentEl = firstErrorEl ? firstErrorEl.parentElement : null;
+                if (errorParentEl && !isInViewport(errorParentEl)) {
+                    let y = errorParentEl.getBoundingClientRect().top;
+                    errorParentEl.scrollIntoView({ behavior: "smooth" });
+                    const navEl = document.querySelector(".w-nav");
+                    if (navEl)
+                        y -= navEl.getBoundingClientRect().height;
+                    window.scrollBy({
+                        top: y,
+                        behavior: "smooth",
+                    });
+                }
             }
         });
     }

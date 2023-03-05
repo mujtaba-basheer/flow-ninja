@@ -76,10 +76,10 @@ window.addEventListener("load", function () {
     {
       // Abandoned calls cost
 
-      let inbound_calls_per_day = 400,
-        calls_abandoned = 0.1,
-        percent_calls_scheduling = 0.35,
-        rev_per_appt = 150;
+      let inbound_calls_per_day = 0,
+        calls_abandoned = 0.0,
+        percent_calls_scheduling = 0.0,
+        rev_per_appt = 100;
 
       const updateAbandonedCallsCost = () => {
         let res = calculateAbandonedCallsCost(
@@ -104,19 +104,19 @@ window.addEventListener("load", function () {
       };
 
       $("#abandonedPractice").on("input", function () {
-        inbound_calls_per_day = getNum($(this), 400);
+        inbound_calls_per_day = getNum($(this), 0);
         updateAbandonedCallsCost();
       });
       $("#abandonedPerecentage").on("input", function () {
-        calls_abandoned = getNum($(this), 10) / 100;
+        calls_abandoned = getNum($(this), 0) / 100;
         updateAbandonedCallsCost();
       });
       $("#patientScheduling").on("input", function () {
-        percent_calls_scheduling = getNum($(this), 35) / 100;
+        percent_calls_scheduling = getNum($(this), 0) / 100;
         updateAbandonedCallsCost();
       });
       $("#abandonedRevenue").on("input", function () {
-        rev_per_appt = getNum($(this), 150);
+        rev_per_appt = getNum($(this), 100);
         updateAbandonedCallsCost();
       });
     }
