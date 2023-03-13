@@ -1,3 +1,6 @@
+// export {};
+// @ts-ignore
+window.formState = window.formState || {};
 window.addEventListener("load", () => {
     const formEls = document.querySelectorAll(`form[form-validation="true"]`);
     const state = new Array(formEls.length);
@@ -241,6 +244,7 @@ window.addEventListener("load", () => {
         state[i] = false;
         // removing HTML tooltips
         formEl.setAttribute("novalidate", "");
+        const formId = formEl.id;
         // managing input fields
         const inputFields = formEl.querySelectorAll(`input.w-input:not([type="submit"])`);
         for (const inputField of inputFields) {
@@ -457,6 +461,15 @@ window.addEventListener("load", () => {
                         top: y,
                         behavior: "smooth",
                     });
+                }
+            }
+            else {
+                // @ts-ignore
+                if (window.formState[formId]) {
+                    // @ts-ignore
+                    const { onComplete } = window.formState[formId];
+                    if (onComplete)
+                        onComplete();
                 }
             }
         });

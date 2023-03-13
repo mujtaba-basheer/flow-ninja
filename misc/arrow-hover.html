@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        display: grid;
+        align-items: safe center;
+        justify-content: safe center;
+      }
+
+      .wrapper {
+        width: 100vw;
+        height: 100vh;
+        max-width: 1000px;
+        max-height: 1000px;
+        padding: 15px;
+      }
+
+      .container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background-color: #f7f7f7;
+        border: 1px solid #f0f0f0;
+        border-radius: 5px;
+        overflow: hidden;
+      }
+
+      .drone {
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 25px;
+        height: 25px;
+        background-color: red;
+        border-radius: 50%;
+        transition: transform 800ms ease-out;
+        will-change: transform;
+        pointer-events: none;
+      }
+    </style>
+    <title>Arrow Hover</title>
+  </head>
+  <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <div class="wrapper">
+      <div class="container">
+        <div class="drone"></div>
+      </div>
+    </div>
+    <script>
+      var $container = $(".container");
+      var $drone = $(".drone");
+      var droneCenter = {
+        x: $drone.width() / 2,
+        y: $drone.height() / 2,
+      };
+
+      $container.on("mousemove", function (event) {
+        $drone.css(
+          "transform",
+          `translate3d(${event.offsetX - droneCenter.x}px, ${
+            event.offsetY - droneCenter.y
+          }px, 0)`
+        );
+      });
+
+      let wrapEl = document.querySelectorAll(".is-slider-titles");
+      wrapEl.forEach((wrapElement) => {
+        $(wrapElement).on("mousemove", function (e) {
+          let activeElement = this.querySelector(".show-casestudies");
+          let activeEl = this.querySelector(".show-casestudies");
+          let ElRect = activeEl.getBoundingClientRect();
+          let middleX = ElRect.width / 2;
+          let middleY = ElRect.height / 2;
+          console.log(middleX);
+          let rect = this.getBoundingClientRect();
+          var x = e.clientX - rect.left;
+          var y = e.clientY - rect.top;
+          activeEl.style.top = "0";
+          activeEl.style.left = "0";
+          activeEl.style.transform = `translate3d(${x - middleX}px, ${
+            y - middleY
+          }px, 0)`;
+        });
+      });
+
+      const wrapEls = document.querySelectorAll(
+        ".is-slider-titles .showcase-card"
+      );
+      wrapEls.forEach((wrapEl) => {
+        const arrowEl = wrapEl.parentElement.querySelector("a");
+        arrowEl.style.top = "0";
+        arrowEl.style.left = "0";
+        let ElRect = arrowEl.getBoundingClientRect();
+        let middleX = ElRect.width / 2;
+        let middleY = ElRect.height / 2;
+        wrapEl.addEventListener("mousemove", (ev) => {
+          const { clientX, clientY } = ev;
+          var x = clientX - ElRect.left;
+          var y = clientY - ElRect.top;
+          arrowEl.style.transform = `translate3d(${x - middleX}px, ${
+            y - middleY
+          }px, 0)`;
+        });
+      });
+    </script>
+  </body>
+</html>

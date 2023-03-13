@@ -1,0 +1,15 @@
+Clone the style-guide here:
+
+https://webflow.com/website/Build-fast-responsive-Webflow-sites-or-Flow-Starter-Style-Guide
+
+This is the style guide that we currently use and start all projects with this setup. 
+
+Read more here:
+
+https://www.flow.ninja/webflow-guides/flow-starter-overview
+
+Right here you can find a little more explanation how we use classes and build in the webflow. 
+
+Figma file: 
+
+https://www.figma.com/file/bfbLsT2yJq94cRzVY1oW2s/Enjin-Test-Project?node-id=0%3A1&t=xwDKdavEqoUTn6jz-0 

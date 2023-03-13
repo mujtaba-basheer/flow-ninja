@@ -1,3 +1,20 @@
+// export {};
+
+type FormState = {
+  [id: string]: {
+    onComplete?: (any?: any) => void;
+  };
+};
+// @ts-ignore
+declare global {
+  interface Window {
+    formState: FormState;
+  }
+}
+
+// @ts-ignore
+window.formState = window.formState || {};
+
 window.addEventListener("load", () => {
   const formEls = document.querySelectorAll<HTMLFormElement>(
     `form[form-validation="true"]`
@@ -288,6 +305,7 @@ window.addEventListener("load", () => {
 
     // removing HTML tooltips
     formEl.setAttribute("novalidate", "");
+    const formId: string = formEl.id;
 
     // managing input fields
     const inputFields = formEl.querySelectorAll<HTMLInputElement>(
@@ -546,6 +564,13 @@ window.addEventListener("load", () => {
             top: y,
             behavior: "smooth",
           });
+        }
+      } else {
+        // @ts-ignore
+        if (window.formState[formId]) {
+          // @ts-ignore
+          const { onComplete } = window.formState[formId];
+          if (onComplete) onComplete();
         }
       }
     });
