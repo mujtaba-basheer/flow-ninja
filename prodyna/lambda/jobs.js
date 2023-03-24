@@ -15,7 +15,9 @@ const handler = async () => {
     const jobsEng = xmlJsonEng.jobs.job.filter(filterJob).map(mapJob);
     const jobsGer = xmlJsonGer.jobs.job.filter(filterJob).map(mapJob);
 
-    console.log(JSON.stringify({ jobsEng, jobsGer }));
+    console.log(
+      JSON.stringify({ jobsEng: jobsEng.length, jobsGer: jobsGer.length })
+    );
   } catch (error) {
     console.error(error);
   }
@@ -41,6 +43,13 @@ const mapJob = (job) => {
   const location = job.PlaceOfWork?.[0]?.trim();
   const branchName = job.Branch_Name?.[0]?.trim();
   const applyURL = job.ApplyURL?.[0]?.trim();
+  const description = job.Textblock1?.[0].trim();
+  const tasksTitle = job.TitelTextblock2?.[0].trim();
+  const tasks = job.Textblock2?.[0].trim();
+  const profileTitle = job.TitelTextblock3?.[0].trim();
+  const profile = job.Textblock3?.[0].trim();
+  const benefitsTitle = job.TitelTextblock4?.[0].trim();
+  const benefits = job.Textblock4?.[0].trim();
 
   return {
     title: jobTitle,
@@ -49,6 +58,15 @@ const mapJob = (job) => {
     location,
     branch: branchName,
     url: applyURL,
+    text: {
+      description,
+      tasksTitle,
+      tasks,
+      profileTitle,
+      profile,
+      benefitsTitle,
+      benefits,
+    },
   };
 };
 
