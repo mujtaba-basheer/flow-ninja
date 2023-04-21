@@ -69,87 +69,87 @@ const renderFilterOptions = (options, filters) => {
         const roleEl = formEl.querySelector('input[name="Role"]');
         if (roleEl && (filters === null || filters === void 0 ? void 0 : filters.role))
             roleEl.value = filters.role;
-        const entryLevelEl = formEl.querySelector('select[name="field"]');
-        if (entryLevelEl) {
+        const countryEl = formEl.querySelector('select[name="field"]');
+        if (countryEl) {
             // @ts-ignore
-            $(entryLevelEl).niceSelect("destroy");
-            entryLevelEl
+            $(countryEl).niceSelect("destroy");
+            countryEl
                 .querySelectorAll("option")
                 .forEach((o, i) => i !== 0 && o.remove());
-            options.entryLevel.forEach((x) => {
+            options.country.forEach((x) => {
                 const optionEl = document.createElement("option");
                 optionEl.value = x;
                 optionEl.text = x;
-                entryLevelEl.appendChild(optionEl);
+                countryEl.appendChild(optionEl);
             });
             // @ts-ignore
-            $(entryLevelEl).niceSelect();
-            if (filters === null || filters === void 0 ? void 0 : filters.entryLevel) {
-                entryLevelEl.value = filters.entryLevel;
+            $(countryEl).niceSelect();
+            if (filters === null || filters === void 0 ? void 0 : filters.country) {
+                countryEl.value = filters.country;
                 // @ts-ignore
-                $(entryLevelEl).niceSelect("update");
+                $(countryEl).niceSelect("update");
             }
         }
-        const departmentEl = formEl.querySelector('select[name="field-2"]');
-        if (departmentEl) {
+        const officeEl = formEl.querySelector('select[name="field-2"]');
+        if (officeEl) {
             // @ts-ignore
-            $(departmentEl).niceSelect("destroy");
-            departmentEl
+            $(officeEl).niceSelect("destroy");
+            officeEl
                 .querySelectorAll("option")
                 .forEach((o, i) => i !== 0 && o.remove());
-            options.department.forEach((x) => {
+            options.office.forEach((x) => {
                 const optionEl = document.createElement("option");
                 optionEl.value = x;
                 optionEl.text = x;
-                departmentEl.appendChild(optionEl);
+                officeEl.appendChild(optionEl);
             });
             // @ts-ignore
-            $(departmentEl).niceSelect();
-            if (filters === null || filters === void 0 ? void 0 : filters.department)
-                departmentEl.value = filters.department;
+            $(officeEl).niceSelect();
+            if (filters === null || filters === void 0 ? void 0 : filters.office)
+                officeEl.value = filters.office;
             // @ts-ignore
-            $(departmentEl).niceSelect("update");
+            $(officeEl).niceSelect("update");
         }
-        const locationEl = formEl.querySelector('select[name="field-3"]');
-        if (locationEl) {
+        const careerPathEl = formEl.querySelector('select[name="field-3"]');
+        if (careerPathEl) {
             // @ts-ignore
-            $(locationEl).niceSelect("destroy");
-            locationEl
+            $(careerPathEl).niceSelect("destroy");
+            careerPathEl
                 .querySelectorAll("option")
                 .forEach((o, i) => i !== 0 && o.remove());
-            options.location.forEach((x) => {
+            options.career_path.forEach((x) => {
                 const optionEl = document.createElement("option");
                 optionEl.value = x;
                 optionEl.text = x;
-                locationEl.appendChild(optionEl);
+                careerPathEl.appendChild(optionEl);
             });
             // @ts-ignore
-            $(locationEl).niceSelect();
-            if (filters === null || filters === void 0 ? void 0 : filters.location)
-                locationEl.value = filters.location;
+            $(careerPathEl).niceSelect();
+            if (filters === null || filters === void 0 ? void 0 : filters.career_path)
+                careerPathEl.value = filters.career_path;
             // @ts-ignore
-            $(locationEl).niceSelect("update");
+            $(careerPathEl).niceSelect("update");
         }
     }
     window.history.pushState("", document.title, window.location.pathname);
 };
 const getFilterOptions = (jobs) => {
-    const entryLevelOptions = new Set();
-    const departmentOptions = new Set();
-    const locationOptions = new Set();
+    const countryOptions = new Set();
+    const officeOptions = new Set();
+    const careerPathOptions = new Set();
     for (const job of jobs) {
-        const { level, department, location } = job;
-        if (!entryLevelOptions.has(level))
-            entryLevelOptions.add(level);
-        if (!departmentOptions.has(department))
-            departmentOptions.add(department);
-        if (!locationOptions.has(location))
-            locationOptions.add(location);
+        const { country, department, location } = job;
+        if (!countryOptions.has(country))
+            countryOptions.add(country);
+        if (!officeOptions.has(location))
+            officeOptions.add(location);
+        if (!careerPathOptions.has(department))
+            careerPathOptions.add(department);
     }
     return {
-        entryLevel: Array.from(entryLevelOptions),
-        department: Array.from(departmentOptions),
-        location: Array.from(locationOptions),
+        country: Array.from(countryOptions),
+        office: Array.from(officeOptions),
+        career_path: Array.from(careerPathOptions),
     };
 };
 const openJobPopup = (job) => {
@@ -222,63 +222,52 @@ const openJobPopup = (job) => {
 window.addEventListener("load", async () => {
     try {
         const sp = new URLSearchParams(window.location.search);
-        const role = sp.get("role"), entryLevel = sp.get("entryLevel"), department = sp.get("department"), location = sp.get("location");
+        const role = sp.get("role"), country = sp.get("country"), office = sp.get("office"), career_path = sp.get("career_path");
         const state = {
-            jobs: {
-                eng: [],
-                ger: [],
-            },
+            jobs: [],
             filters: {
                 role: role ? decodeURIComponent(role) : "",
-                entryLevel: entryLevel ? decodeURIComponent(entryLevel) : "",
-                department: department ? decodeURIComponent(department) : "",
-                location: location ? decodeURIComponent(location) : "",
+                country: country ? decodeURIComponent(country) : "",
+                office: office ? decodeURIComponent(office) : "",
+                career_path: career_path ? decodeURIComponent(career_path) : "",
             },
             lang: "en",
             filterOptions: {
-                eng: {
-                    entryLevel: [],
-                    department: [],
-                    location: [],
-                },
-                ger: {
-                    entryLevel: [],
-                    department: [],
-                    location: [],
-                },
+                country: [],
+                office: [],
+                career_path: [],
             },
         };
         // @ts-ignore
         const weglot = (window.Weglot || {});
         const response = await getJobs();
         const { data: { eng, ger }, } = response;
-        state.jobs.eng = eng;
-        state.jobs.ger = ger;
-        state.filterOptions.eng = getFilterOptions(eng);
-        state.filterOptions.ger = getFilterOptions(ger);
+        state.jobs = [...eng, ...ger];
+        state.filterOptions = getFilterOptions(state.jobs);
+        console.log({ filterOptions: state.filterOptions });
         state.lang = weglot.getCurrentLang();
         const loaderEl = document.querySelector("div#jobs-preloader");
         if (loaderEl)
             loaderEl.style.display = "none";
-        renderFilterOptions(state.filterOptions[state.lang === "de" ? "ger" : "eng"], state.filters);
+        renderFilterOptions(state.filterOptions, state.filters);
+        // renderJobs(state.jobs);
         const applyFilters = () => {
-            const { filters, lang } = state;
-            const jobs = state.jobs[lang === "de" ? "ger" : "eng"];
+            const { filters, jobs } = state;
             const filteredJobs = [];
             for (const job of jobs) {
-                const { title, level, department, location } = job;
+                const { title, department, location, country } = job;
                 let flag = true;
                 if (filters.role) {
                     flag = title.toLowerCase().includes(filters.role.toLowerCase());
                 }
-                if (flag && filters.entryLevel) {
-                    flag = level === filters.entryLevel;
+                if (flag && filters.country) {
+                    flag = country === filters.country;
                 }
-                if (flag && filters.department) {
-                    flag = department === filters.department;
+                if (flag && filters.office) {
+                    flag = location === filters.office;
                 }
-                if (flag && filters.location) {
-                    flag = location === filters.location;
+                if (flag && filters.career_path) {
+                    flag = department === filters.career_path;
                 }
                 if (flag)
                     filteredJobs.push(job);
@@ -291,22 +280,22 @@ window.addEventListener("load", async () => {
             const onSumbit = () => {
                 const filters = {
                     role: "",
-                    entryLevel: "",
-                    department: "",
-                    location: "",
+                    country: "",
+                    office: "",
+                    career_path: "",
                 };
                 const roleEl = formEl.querySelector('input[name="Role"]');
                 if (roleEl)
                     filters.role = roleEl.value;
-                const entryLevelEl = formEl.querySelector('select[name="field"]');
-                if (entryLevelEl)
-                    filters.entryLevel = entryLevelEl.value;
-                const departmentEl = formEl.querySelector('select[name="field-2"]');
-                if (departmentEl)
-                    filters.department = departmentEl.value;
-                const locationEl = formEl.querySelector('select[name="field-3"]');
-                if (locationEl)
-                    filters.location = locationEl.value;
+                const countryEl = formEl.querySelector('select[name="field"]');
+                if (countryEl)
+                    filters.country = countryEl.value;
+                const officeEl = formEl.querySelector('select[name="field-2"]');
+                if (officeEl)
+                    filters.office = officeEl.value;
+                const careerPathEl = formEl.querySelector('select[name="field-3"]');
+                if (careerPathEl)
+                    filters.career_path = careerPathEl.value;
                 state.filters = filters;
                 console.log(filters);
                 applyFilters();
@@ -317,29 +306,17 @@ window.addEventListener("load", async () => {
                 onSumbit();
             });
         }
-        weglot.on("languageChanged", (newLang, prevLang) => {
-            // @ts-ignore
-            state.lang = newLang;
-            renderJobs(state.jobs[newLang === "de" ? "ger" : "eng"]);
-            renderFilterOptions(state.filterOptions[newLang === "de" ? "ger" : "eng"]);
-            state.filters = {
-                role: "",
-                entryLevel: "",
-                department: "",
-                location: "",
-            };
-        });
         const resetBtn = document.querySelector("button#reset-filter-job");
         if (resetBtn) {
             resetBtn.addEventListener("click", () => {
                 const filters = {
                     role: "",
-                    entryLevel: "",
-                    department: "",
-                    location: "",
+                    country: "",
+                    office: "",
+                    career_path: "",
                 };
                 state.filters = filters;
-                renderFilterOptions(state.filterOptions[state.lang === "de" ? "ger" : "eng"]);
+                renderFilterOptions(state.filterOptions);
                 applyFilters();
             });
         }

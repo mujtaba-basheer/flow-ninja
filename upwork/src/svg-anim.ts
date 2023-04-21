@@ -6,6 +6,10 @@ type SvgAnimInfoT = {
 
 const svgAnimations: SvgAnimInfoT[] = [
   {
+    element: ".first-green-circle.w-embed svg",
+    duration: 2000,
+  },
+  {
     element: ".small-top-line.w-embed svg",
     duration: 400,
   },
@@ -186,23 +190,65 @@ const options: IntersectionObserverInit = {
 const callback: IntersectionObserverCallback = (entries, observer) => {
   entries.forEach((entry) => {
     if (entry.isIntersecting) {
-      const pathEl = entry.target.querySelector("path, circle.last-circle");
+      const pathEl = entry.target.querySelector(
+        "path, circle.last-circle, circle.first-circle"
+      );
       if (pathEl) {
-        const { duration, onComplete } = animArray[i];
         pathEl.classList.add("animate");
-        observer.unobserve(entry.target);
-        setTimeout(() => {
-          if (onComplete) onComplete();
-          i += 1;
-          if (animArray[i]) {
-            const { element } = animArray[i];
-            const nextEl = document.querySelector(element);
-            if (nextEl) observer.observe(nextEl);
-          }
-        }, duration);
+
+        if (animArray[i]) {
+          const { duration, onComplete } = animArray[i];
+          observer.unobserve(entry.target);
+          setTimeout(() => {
+            if (onComplete) onComplete();
+            i += 1;
+            if (animArray[i]) {
+              const { element } = animArray[i];
+              const nextEl = document.querySelector(element);
+              if (nextEl) observer.observe(nextEl);
+            }
+          }, duration);
+        }
       }
     }
   });
 };
 const observer = new IntersectionObserver(callback, options);
 if (target) observer.observe(target);
+
+const optionsV2: IntersectionObserverInit = {
+  threshold: 1.0,
+  rootMargin: window.innerWidth > 1280 ? "0px 0px -500px 0px" : "0px",
+};
+const optionsV3: IntersectionObserverInit = {
+  threshold: 0.5,
+  rootMargin: window.innerWidth > 1280 ? "0px 0px -200px 0px" : "0px",
+};
+const callbackV2: IntersectionObserverCallback = (entries, observer) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting && entry.target) {
+      const sl_no: number = +(entry.target.getAttribute("sl-no") || 0);
+      // code for excluding elements
+      const exclude_till = 4; // counting starts from 0, so first element has sl-no 0
+      if (sl_no <= exclude_till) return;
+      const pathEl = entry.target.querySelector(
+        "path, circle.last-circle, circle.first-circle"
+      );
+      observer.unobserve(entry.target);
+      if (pathEl) {
+        pathEl.classList.add("animate");
+        const { onComplete } = animArray[sl_no];
+        if (onComplete) onComplete();
+      }
+    }
+  });
+};
+const observerV2 = new IntersectionObserver(callbackV2, optionsV2);
+const observerV3 = new IntersectionObserver(callbackV2, optionsV3);
+animArray.forEach((animEl, i) => {
+  const el = document.querySelector(animEl.element);
+  if (el) {
+    el.setAttribute("sl-no", i + "");
+    (animEl.element.includes("line") ? observerV3 : observerV2).observe(el);
+  }
+});

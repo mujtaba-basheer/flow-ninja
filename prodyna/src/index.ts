@@ -97,6 +97,7 @@ window.addEventListener("load", () => {
         slug: value.toLowerCase().split(" ").join("-"),
       },
     });
+    itemEl.setAttribute("href", `/search?query=${encodeURIComponent(value)}`);
   }
 
   const inputEl = document.getElementById("search") as HTMLInputElement;
