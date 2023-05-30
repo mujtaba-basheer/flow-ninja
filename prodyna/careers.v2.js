@@ -93,7 +93,9 @@ window.addEventListener("load", async () => {
                 for (const k of Object.keys(filters)) {
                     sp.set(k, filters[k]);
                 }
-                window.location.href = `https://${window.location.hostname}/jobs?${sp.toString()}`;
+                // @ts-ignore
+                const currentLang = window.Weglot.getCurrentLang();
+                window.location.href = `https://${window.location.hostname}${currentLang === "de" ? "/de" : ""}/jobs?${sp.toString()}`;
             };
             formEl.addEventListener("submit", (ev) => {
                 ev.preventDefault();

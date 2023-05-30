@@ -165,8 +165,11 @@ window.addEventListener("load", async () => {
           sp.set(k, filters[k]);
         }
 
-        window.location.href = `https://${
-          window.location.hostname
+        // @ts-ignore
+        const currentLang = window.Weglot.getCurrentLang();
+
+        window.location.href = `https://${window.location.hostname}${
+          currentLang === "de" ? "/de" : ""
         }/jobs?${sp.toString()}`;
       };
 

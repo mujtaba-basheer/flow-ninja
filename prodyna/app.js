@@ -16,8 +16,9 @@ const filesToUpload = [
   // "open-positions",
   // "index",
   // "search",
-  "open-positions.v2",
-  // "careers.v2",
+  // "open-positions.v2",
+  "careers.v2",
+  // ""
 ];
 
 const returnPromise = (file) => {

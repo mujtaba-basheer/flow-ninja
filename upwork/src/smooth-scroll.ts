@@ -8,14 +8,17 @@ const whiteBoxEl2 = document.querySelector<HTMLDivElement>(
   "div.load-number-bg.white-box.first"
 );
 if (blueCardEl) {
-  blueCardEl.style.position = "sticky";
-  blueCardEl.style.top = "152px";
+  document.body.style.overflow = "hidden";
+  document.body.style.height = "100%";
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
+
 let factor = 0.01,
-  runCount = 0;
+  runCount = 0,
+  lastPos = 0,
+  hit = false;
 
 const onWheel = async (ev: WheelEvent) => {
-  console.log("inside function: onWheel");
   const currentEl = runCount === 0 ? whiteBoxEl1 : whiteBoxEl2;
   const inc = factor * ev.deltaY;
   if (currentEl && whiteBoxEl1 && whiteBoxEl2) {
@@ -48,16 +51,22 @@ const onWheel = async (ev: WheelEvent) => {
     }
   }
 };
-const onScroll = async () => {
-  console.log("inside function: onScroll");
-  if (blueCardEl) {
-    const top = blueCardEl.getBoundingClientRect().top;
-    if (top < 160) {
-      document.body.style.overflow = "hidden";
-      window.removeEventListener("scroll", onScroll);
-      window.addEventListener("wheel", onWheel);
-    }
-  }
-};
 
-window.addEventListener("scroll", onScroll);
+if (blueCardEl) {
+  window.addEventListener("wheel", onWheel);
+}
+
+// const onScroll = async () => {
+//   if (blueCardEl) {
+//     const top = blueCardEl.getBoundingClientRect().top;
+//     // if (top < 160) {
+//     if (top < 260) {
+//       document.body.style.overflow = "hidden";
+//       document.body.style.height = "100%";
+//       window.removeEventListener("scroll", onScroll);
+//       window.addEventListener("wheel", onWheel);
+//     }
+//   }
+// };
+
+// window.addEventListener("scroll", onScroll);

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pills Animation</title>
+  <style>
+    #app-ExploreProject {
+      font-family: "Avenir", Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      /* text-align: center; */
+      color: #171010;
+      z-index: 1;
+    }
+
+    #app-ExploreProject.isMobile {
+      display: none;
+    }
+
+    #app-ExploreProject .explore-project--canvas {
+      padding-bottom: 10em;
+    }
+
+    #app-ExploreProject canvas {
+      width: 100%;
+      height: auto;
+      outline: 1px solid black;
+    }
+
+    #app-ExploreProject .c-horizon-list__top {
+      justify-content: space-between;
+    }
+
+    #app-ExploreProject .c-horizon-list__top-btn {
+      align-self: center;
+    }
+
+    #app-ExploreProject+.minime-item>.minime {
+      margin-top: -0px;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      /* Chrome all / Safari all */
+      -moz-user-select: none;
+      /* Firefox all */
+      -ms-user-select: none;
+      /* IE 10+ */
+      user-select: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div id="app-ExploreProject" ref="self" :class="isMobile && 'isMobile'">
+      <div class="explore-project--canvas" ref="canvasWrap" id="logo-section"></div>
+      <!-- <div class="explore-project--copyright">DFY® combines digital strategy with emotional design to produce creative solutions that make a difference, and merges branding and advertising with digital platforms for authentic brand experiences that connect with the consumer. </div> -->
+    </div>
+  </div>
+
+  <script src="../libraries/matter.min.js"></script>
+  <script src="../libraries/path-data-polyfill.js"></script>
+  <script src="../libraries/pathseg.js"></script>
+  <script src="../libraries/pills-anim.js"></script>
+</body>
+
+</html>
