@@ -41,7 +41,7 @@ window.addEventListener("load", async () => {
                 return;
             videosContainer.style.transform = `translateX(-${percentShift}%)`;
             videosContainerCopy.style.transform = `translateX(-${percentShift}%)`;
-            percentShift += 0.1;
+            percentShift += 0.01;
             if (percentShift >= 100) {
                 videosContainer.style.transform = `translateX(0)`;
                 videosContainerCopy.style.transform = `translateX(0)`;
@@ -141,7 +141,7 @@ window.addEventListener("load", async () => {
                     },
                     {
                         name: "Freitag",
-                        path: "m0,0h264.83v108.69h-264.83z",
+                        path: "m0,0h242.66v63.98h-242.66z",
                         imgName: "yazio.png",
                     },
                     {
