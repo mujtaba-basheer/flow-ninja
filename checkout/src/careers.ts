@@ -5,18 +5,19 @@ type JobT = {
   title: string;
   url: string;
 };
-type JobsAPIRespT =
-  | {
-      status: true;
-      data: JobT[];
-    }
-  | {
-      status: false;
-      msg: string;
-    };
-type DropdownStateT = {
-  isEmpty: boolean;
+type JobsAPIRespT = {
+  status: true;
+  data: JobT[];
+  msg: string;
+};
+type DropdownValuesT = {
   selected: string[];
+  unselected: string[];
+  all: string[];
+};
+type DropdownStateT = {
+  isFirstRender: boolean;
+  values: DropdownValuesT;
 };
 type StateT = {
   jobs: JobT[];
@@ -27,8 +28,8 @@ type StateT = {
     input: string;
   };
   dropdowns: {
-    location: DropdownStateT;
-    team: DropdownStateT;
+    locations: DropdownStateT;
+    teams: DropdownStateT;
   };
 };
 
@@ -42,13 +43,21 @@ window.addEventListener("load", async () => {
       input: "",
     },
     dropdowns: {
-      location: {
-        isEmpty: true,
-        selected: [],
+      locations: {
+        isFirstRender: true,
+        values: {
+          selected: [],
+          unselected: [],
+          all: [],
+        },
       },
-      team: {
-        isEmpty: true,
-        selected: [],
+      teams: {
+        isFirstRender: true,
+        values: {
+          selected: [],
+          unselected: [],
+          all: [],
+        },
       },
     },
   };
@@ -61,6 +70,9 @@ window.addEventListener("load", async () => {
       const emptyState = document.querySelector<HTMLDivElement>(
         "div.careers-empty-state"
       );
+      const tableLabels = document.getElementById(
+        "table-labels"
+      ) as HTMLDivElement;
 
       if (jobsContainer) {
         // clearing previous rendering
@@ -103,8 +115,10 @@ window.addEventListener("load", async () => {
         if (emptyState) {
           if (state.filteredJobs.length) {
             emptyState.style.display = "none";
+            tableLabels.style.display = "grid";
           } else {
             emptyState.style.display = "block";
+            tableLabels.style.display = "none";
           }
         }
       }
@@ -124,8 +138,308 @@ window.addEventListener("load", async () => {
       return job.title.toLowerCase().includes(input.toLowerCase());
     });
 
+    let qs: string[] = [];
+    if (locations.length) {
+      locations.forEach((x) => qs.push(`location=${x}`));
+    }
+    if (teams.length) {
+      teams.forEach((x) => qs.push(`team=${x}`));
+    }
+    if (input) qs.push(`search=${input}`);
+    window.history.pushState(
+      null,
+      "",
+      `https://${window.location.hostname}/careers/?${qs.join("&")}`
+    );
+
     state.filteredJobs = filteredJobs;
   };
+
+  const populateDropdowns = async () => {
+    try {
+      const sp = new URLSearchParams(window.location.search);
+      const jobs = state.jobs;
+
+      const applyObserver = (target: HTMLElement, tag: string) => {
+        const callback: MutationCallback = (mutations) => {
+          for (const mutation of mutations) {
+            const element = mutation.target as HTMLDivElement;
+            const isOpen = element.classList.contains("w--open");
+            if (!isOpen) renderOptions(tag);
+          }
+        };
+        const options: MutationObserverInit = {
+          attributeFilter: ["class"],
+          childList: false,
+        };
+        const observer = new MutationObserver(callback);
+        observer.observe(target, options);
+      };
+
+      const onChange = (tag: string) => {
+        const {
+          values: { selected },
+        } = state.dropdowns[tag] as DropdownStateT;
+        state.filters[tag] = selected;
+        const navEl = document.getElementById(`${tag}-list`) as HTMLElement;
+
+        const selectedEls =
+          navEl.querySelectorAll<HTMLAnchorElement>("a.active");
+        const numSelected = selected.length;
+
+        try {
+          const toggleWrapper = document.getElementById(
+            `${tag}-toggle`
+          ) as HTMLDivElement;
+          const labelEl = toggleWrapper.querySelector<HTMLDivElement>(
+            ".filter-toggle-text"
+          );
+          const selectionEl = toggleWrapper.querySelector<HTMLDivElement>(
+            ".filter-selected-text"
+          );
+
+          if (labelEl && selectionEl) {
+            switch (numSelected) {
+              case 0: {
+                labelEl.classList.remove("active-toggle");
+                selectionEl.textContent = "";
+                selectionEl.classList.remove("active");
+                break;
+              }
+              case 1: {
+                labelEl.classList.add("active-toggle");
+                selectionEl.textContent = selected[0];
+                // selectionEl.textContent = selectedEls.item(0).textContent;
+                selectionEl.classList.add("active");
+                break;
+              }
+              default: {
+                labelEl.classList.add("active-toggle");
+                selectionEl.textContent = `${numSelected} Selections`;
+                selectionEl.classList.add("active");
+                break;
+              }
+            }
+          }
+
+          filterJobs();
+          renderJobs();
+        } catch (error) {
+          console.error(error);
+        }
+      };
+
+      const renderOptions = (tag: string) => {
+        const { values } = state.dropdowns[tag] as DropdownStateT;
+        const navEl = document.getElementById(`${tag}-list`) as HTMLElement;
+
+        const { selected, unselected, all } = values;
+
+        navEl.querySelectorAll("a").forEach((aEl) => aEl.remove());
+
+        for (let i = 0; i < all.length; i++) {
+          const value = all[i];
+          const itemEl = document.createElement("a");
+          itemEl.className = "filter-dropdown-link w-inline-block";
+          itemEl.href = "#";
+          itemEl.tabIndex = i;
+
+          {
+            const textEl = document.createElement("div");
+            textEl.textContent = value;
+
+            const closeEl = document.createElement("div");
+            closeEl.className = "filter-dropdown-link-close";
+            closeEl.addEventListener("click", (ev) => {
+              ev.preventDefault();
+              ev.stopPropagation();
+
+              const isActive = itemEl.classList.contains("active");
+              if (isActive) {
+                itemEl.classList.remove("active");
+                closeEl.style.display = "none";
+
+                const {
+                  values: { selected, unselected },
+                } = state.dropdowns[tag] as DropdownStateT;
+                const i = selected.findIndex((x) => x === value);
+                selected.splice(i, 1);
+                unselected.push(value);
+                unselected.sort((a, b) => a.localeCompare(b));
+              }
+
+              onChange(tag);
+            });
+
+            itemEl.appendChild(textEl);
+            itemEl.appendChild(closeEl);
+          }
+
+          itemEl.addEventListener("click", (ev) => {
+            ev.preventDefault();
+            const isActive = itemEl.classList.contains("active");
+            if (!isActive) {
+              itemEl.classList.add("active");
+
+              const {
+                values: { selected, unselected },
+              } = state.dropdowns[tag] as DropdownStateT;
+
+              const i = unselected.findIndex((x) => x === value);
+              unselected.splice(i, 1);
+              selected.push(value);
+              selected.sort((a, b) => a.localeCompare(b));
+
+              const closeEl = itemEl.querySelector<HTMLDivElement>(
+                ".filter-dropdown-link-close"
+              );
+              if (closeEl) closeEl.style.display = "block";
+            }
+
+            onChange(tag);
+          });
+
+          navEl.appendChild(itemEl);
+          if (!unselected.find((x) => x === value)) {
+            itemEl.style.display = "none";
+          }
+        }
+
+        const activeListEl = navEl.querySelector<HTMLDivElement>(
+          `#${tag}-active-filters`
+        );
+        if (activeListEl) {
+          const makeItemVisible = (value: string) => {
+            navEl.querySelectorAll("a").forEach((aEl) => {
+              if (!activeListEl.contains(aEl) && aEl.textContent === value) {
+                aEl.style.display = "";
+              }
+            });
+          };
+
+          if (selected.length) {
+            activeListEl.style.display = "block";
+
+            for (let i = 0; i < selected.length; i++) {
+              const value = selected[i];
+              const itemEl = document.createElement("a");
+              itemEl.className = "filter-dropdown-link w-inline-block active";
+              itemEl.href = "#";
+              itemEl.tabIndex = i;
+              {
+                const textEl = document.createElement("div");
+                textEl.textContent = value;
+
+                const closeEl = document.createElement("div");
+                closeEl.className = "filter-dropdown-link-close";
+                closeEl.style.display = "block";
+
+                closeEl.addEventListener("click", (ev) => {
+                  ev.preventDefault();
+                  ev.stopPropagation();
+
+                  const {
+                    values: { selected, unselected },
+                  } = state.dropdowns[tag] as DropdownStateT;
+
+                  const i = selected.findIndex((x) => x === value);
+                  selected.splice(i, 1);
+                  unselected.push(value);
+                  unselected.sort((a, b) => a.localeCompare(b));
+
+                  onChange(tag);
+
+                  itemEl.classList.remove("active");
+                  itemEl.style.display = "none";
+                  makeItemVisible(value);
+                  if (!activeListEl.querySelectorAll("a.active").length)
+                    activeListEl.style.display = "none";
+                });
+
+                itemEl.appendChild(textEl);
+                itemEl.appendChild(closeEl);
+              }
+
+              activeListEl.appendChild(itemEl);
+            }
+          } else {
+            activeListEl.style.display = "none";
+          }
+        }
+
+        if (state.dropdowns[tag].isFirstRender) {
+          state.dropdowns[tag].isFirstRender = false;
+          onChange(tag);
+        }
+      };
+
+      const locations = new Set<string>();
+      const teams = new Set<string>();
+
+      for (const job of jobs) {
+        const { location, team } = job;
+        locations.add(location);
+        teams.add(team);
+      }
+
+      // populating locations dropdown
+      const locationsList = Array.from(locations);
+      locationsList.sort((a, b) => a.localeCompare(b));
+      const selectedLocations = sp.getAll("location");
+      state.dropdowns.locations.values = {
+        selected: [...selectedLocations],
+        unselected: locationsList.filter((l) => !selectedLocations.includes(l)),
+        all: [...locationsList],
+      };
+      {
+        const listEl = document.getElementById("locations-list");
+        if (listEl) {
+          listEl.querySelectorAll("a").forEach((aEl) => aEl.remove());
+
+          renderOptions("locations");
+          applyObserver(listEl, "locations");
+        }
+      }
+
+      // populating teams dropdown
+      const teamsList = Array.from(teams);
+      teamsList.sort((a, b) => a.localeCompare(b));
+      const selectedTeams = sp.getAll("team");
+      state.dropdowns.teams.values = {
+        selected: [...selectedTeams],
+        unselected: teamsList.filter((t) => !selectedTeams.includes(t)),
+        all: [...teamsList],
+      };
+      {
+        const listEl = document.getElementById("teams-list");
+
+        if (listEl) {
+          listEl.querySelectorAll("a").forEach((aEl) => aEl.remove());
+          renderOptions("teams");
+          applyObserver(listEl, "teams");
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // Adding data to state
+  {
+    const sp = new URLSearchParams(window.location.search);
+    const selectedLocations = sp.getAll("location");
+    state.filters.locations = [...selectedLocations];
+    const selectedTeams = sp.getAll("team");
+    state.filters.teams = [...selectedTeams];
+    const defaultInput = sp.get("search");
+    if (defaultInput) {
+      state.filters.input = defaultInput;
+      const inputEl = document.getElementById(
+        "careers-search"
+      ) as HTMLInputElement;
+      if (inputEl) inputEl.value = defaultInput;
+    }
+  }
 
   const jobsContainer = document.querySelector<HTMLDivElement>(
     "div.careers-job-list"
@@ -143,6 +457,7 @@ window.addEventListener("load", async () => {
         state.jobs = jobs;
         state.filteredJobs = jobs;
         renderJobs();
+        populateDropdowns();
       } else throw new Error(res.msg);
     } catch (error) {
       console.error(error);

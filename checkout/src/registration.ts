@@ -3,7 +3,8 @@ const DUPLICATE_EMAIL_RESPONSE_CODE = "client_with_same_email_already_exists";
 const EMAIL_IN_USE_ERROR_CODE =
   "email_address_is_already_registered_as_admin_on_another_client";
 const LAMBDA_PROXY_URL =
-  "https://0a50cfhnal.execute-api.us-east-1.amazonaws.com/sandbox";
+  // "https://0a50cfhnal.execute-api.us-east-1.amazonaws.com/sandbox";
+  "https://checkout-website-cko-web.vercel.app";
 
 const formSubmissionStatus = {
   emailExistsError: 1,
@@ -76,13 +77,17 @@ const preFormSubmission = async (event) => {
 
   try {
     //This maps to our API route within the NextJS app, will need changing.
-    const apiRequest = await fetch(`${LAMBDA_PROXY_URL}/register-account`, {
-      method: "POST",
-      body: JSON.stringify(nasApiData),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const apiRequest = await fetch(
+      // `${LAMBDA_PROXY_URL}/register-account`
+      `${LAMBDA_PROXY_URL}/api/nas-sandbox-account`,
+      {
+        method: "POST",
+        body: JSON.stringify(nasApiData),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     if (!apiRequest.ok) {
       throw await apiRequest.json();
     }

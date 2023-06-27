@@ -1,1 +1,3 @@
-Sandbox Page URL: https://checkout-x-flow-ninja.webflow.io/get-test-account
+Sandbox Account Page URL: https://checkout-x-flow-ninja.webflow.io/get-test-account
+Sandbox Careers Page URL: https://checkout-x-flow-ninja.webflow.io/careers
+Sandbox Payment Methods Page URL: https://checkout-x-flow-ninja.webflow.io/payment-method/accept

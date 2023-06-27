@@ -11,7 +11,7 @@ const creds = new AWS.Credentials({
 
 const S3 = new AWS.S3({ credentials: creds });
 
-const filesToUpload = ["svg-anim"];
+const filesToUpload = ["pilot-cart-test"];
 
 const returnPromise = (file) => {
   return new Promise((res, rej) => {
@@ -19,13 +19,13 @@ const returnPromise = (file) => {
       {
         Bucket: "flow-ninja-assets",
 
-        // Key: `misc/${file}.js`,
-        // Body: fs.createReadStream(`misc/${file}.js`),
-        // ContentType: "application/javascript",
+        Key: `misc/${file}.js`,
+        Body: fs.createReadStream(`misc/${file}.js`),
+        ContentType: "application/javascript",
 
-        Key: `misc/${file}.html`,
-        Body: fs.createReadStream(`misc/${file}.html`),
-        ContentType: "text/html",
+        // Key: `misc/${file}.html`,
+        // Body: fs.createReadStream(`misc/${file}.html`),
+        // ContentType: "text/html",
 
         ACL: "public-read",
       },

@@ -13,6 +13,7 @@ const S3 = new AWS.S3({ credentials: creds });
 
 const filesToUpload = [
   "dashboard",
+  // "payment",
   // ""
 ];
 

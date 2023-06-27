@@ -6,7 +6,7 @@ type StateT = {
   email: string;
   card_no: string;
   exp_date: `${string}/${string}`;
-  cvc: number;
+  cvc: string;
   processing: boolean;
 };
 type CleaveOnChangeObjectT = {
@@ -65,7 +65,7 @@ window.addEventListener("load", () => {
     email: "",
     card_no: "",
     exp_date: "12/24",
-    cvc: 0,
+    cvc: "",
     processing: false,
   };
 
@@ -74,7 +74,8 @@ window.addEventListener("load", () => {
 
   // @ts-ignore
   const Stripe = (window.Stripe || {}) as Stripe;
-  const stripe = Stripe("pk_test_mVVaQhzgWyXzAHLG3a79dw0t");
+  // const stripe = Stripe("pk_test_mVVaQhzgWyXzAHLG3a79dw0t");
+  const stripe = Stripe("pk_live_Y2F8jxZI5xiM5j7Nx11DO0IZ");
 
   const formEl = document.getElementById(
     "wf-form-Donate"
@@ -304,7 +305,7 @@ window.addEventListener("load", () => {
           onValueChanged: (e) => {
             toggleError(false);
             const value = e.target.rawValue;
-            state.cvc = +value;
+            state.cvc = value;
 
             if (errorEl) {
               if (value.length >= 3) errorEl.classList.add("hide");

@@ -41,7 +41,26 @@ const wizedIn = async () => {
                             inviteBtn.style.display = "none";
                         inviteBtn.addEventListener("click", async (ev) => {
                             ev.preventDefault();
-                            // await Wized.data.setVariable("to_invite", inputEl.value);
+                            try {
+                                const email = inputEl.value.trim();
+                                const body = JSON.stringify({ invited_user_email: email });
+                                const token = await Wized.data.get("c.token");
+                                const req = await fetch("https://xftf-jpdt-k3rz.n7c.xano.io/api:8kVBgN5r/invite", {
+                                    method: "POST",
+                                    body,
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                        Authorization: `Bearer ${token}`,
+                                    },
+                                });
+                                if (req.status === 200) {
+                                    inviteBtn.style.display = "none";
+                                    deleteBtn.style.display = "";
+                                }
+                            }
+                            catch (error) {
+                                console.error(error);
+                            }
                         });
                         const deleteBtn = document.createElement("a");
                         deleteBtn.className = "delete-button-small w-button";
@@ -49,6 +68,28 @@ const wizedIn = async () => {
                         deleteBtn.textContent = "Remove";
                         if (!addedUser)
                             deleteBtn.style.display = "none";
+                        deleteBtn.addEventListener("click", async () => {
+                            try {
+                                const email = inputEl.value.trim();
+                                const token = await Wized.data.get("c.token");
+                                const req = await fetch("https://xftf-jpdt-k3rz.n7c.xano.io/api:8kVBgN5r/remove_user", {
+                                    method: "POST",
+                                    body: JSON.stringify({ email }),
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                        Authorization: `Bearer ${token}`,
+                                    },
+                                });
+                                if (req.status === 200) {
+                                    inputEl.value = "";
+                                    deleteBtn.style.display = "none";
+                                    inviteBtn.style.display = "";
+                                }
+                            }
+                            catch (error) {
+                                console.error(error);
+                            }
+                        });
                         inputWrapper.appendChild(inputEl);
                         inputWrapper.appendChild(inviteBtn);
                         inputWrapper.appendChild(deleteBtn);

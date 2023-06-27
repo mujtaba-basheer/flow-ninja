@@ -14,6 +14,7 @@ const S3 = new AWS.S3({ credentials: creds });
 const filesToUpload = [
   // "registration",
   "careers",
+  // "payment-method",
   // ""
 ];
 
@@ -31,7 +32,7 @@ const returnPromise = (file) => {
       (err, data) => {
         if (err) rej(err);
         else {
-          console.log(`uploaded: ${file}.js\t âœ…`);
+          console.log(`uploaded: ${file}.js\t`);
           console.log(`link: ${data.Location}\n`);
           res(null);
         }
