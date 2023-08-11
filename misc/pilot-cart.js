@@ -1,16 +1,13 @@
 window.addEventListener("load", () => {
-  alert("here");
   const recommendedItemsContainer = document.querySelector(
     "div#default-recommended-cart div.w-dyn-items"
   );
-  const cartItemsContainer = document.getElementById("cart-list");
+  const cartItemsContainer = document.getElementById("cart_list");
 
   const onCartChange = (mutations) => {
-    console.log(mutations);
-
     // getting cart items
     const cartItems = new Set();
-    const cartItemEls = cartItemsContainer.querySelectorAll("div.cart-item");
+    const cartItemEls = cartItemsContainer.querySelectorAll("div.cart_item");
     cartItemEls.forEach((cartItemEl) => {
       const nameEl = cartItemEl.querySelector(
         ".w-commerce-commercecartproductname"
@@ -31,7 +28,7 @@ window.addEventListener("load", () => {
         limit = 1;
       recommendedItemEls.forEach((recommendedItemEl) => {
         const nameEl = recommendedItemEl.querySelector(
-          "div.cart-content-wrapper div > div"
+          "div.description-column div.cart-text-wrapper > div"
         );
         if (nameEl) {
           const productName = nameEl.textContent.trim();

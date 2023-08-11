@@ -149,13 +149,15 @@ window.addEventListener("load", async () => {
     window.history.pushState(
       null,
       "",
-      `https://${window.location.hostname}/careers/?${qs.join("&")}`
+      `https://${window.location.hostname}/careers${
+        qs.length ? "/?" : ""
+      }${qs.join("&")}`
     );
 
     state.filteredJobs = filteredJobs;
   };
 
-  const populateDropdowns = async () => {
+  const populateDropdowns = async (selectionText: string) => {
     try {
       const sp = new URLSearchParams(window.location.search);
       const jobs = state.jobs;
@@ -215,7 +217,7 @@ window.addEventListener("load", async () => {
               }
               default: {
                 labelEl.classList.add("active-toggle");
-                selectionEl.textContent = `${numSelected} Selections`;
+                selectionEl.textContent = `${numSelected} ${selectionText}`;
                 selectionEl.classList.add("active");
                 break;
               }
@@ -446,6 +448,7 @@ window.addEventListener("load", async () => {
   );
   if (jobsContainer) {
     // fetching jobs
+    let selectionText: string = "";
     try {
       const req = await fetch(
         " https://0a50cfhnal.execute-api.us-east-1.amazonaws.com/sandbox/jobs"
@@ -457,7 +460,31 @@ window.addEventListener("load", async () => {
         state.jobs = jobs;
         state.filteredJobs = jobs;
         renderJobs();
-        populateDropdowns();
+
+        const selectionMap = {
+          "fr-fr": "Sélectionné",
+          "de-de": "Ausgewählt",
+          "it-it": "Selezionato",
+          "es-es": "Seleccionado",
+          "ar-ae": "التفضيلات",
+          "ar-sa": "التفضيلات",
+          "pt-pt": "Seleccionado",
+          en: "Selections",
+        };
+        const hiddenLangEl = document.getElementById(
+          "hidden-page-language"
+        ) as HTMLDivElement | null;
+        if (hiddenLangEl) {
+          const langCode = hiddenLangEl.textContent?.trim() as string;
+          if (selectionMap[langCode]) {
+            selectionText = selectionMap[langCode];
+          } else {
+            selectionText = selectionMap["en"];
+          }
+        } else {
+          selectionText = selectionMap["en"];
+        }
+        populateDropdowns(selectionText);
       } else throw new Error(res.msg);
     } catch (error) {
       console.error(error);

@@ -54,6 +54,7 @@ const preFormSubmission = async (event) => {
     };
     if (work_email.endsWith("@checkout.com")) {
         formStatus = formSubmissionStatus.emailExistsError;
+        setView();
         return;
     }
     try {

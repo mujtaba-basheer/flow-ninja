@@ -1,4 +1,5 @@
 window.addEventListener("load", async () => {
+    var _a;
     const state = {
         jobs: [],
         filteredJobs: [],
@@ -96,10 +97,10 @@ window.addEventListener("load", async () => {
         }
         if (input)
             qs.push(`search=${input}`);
-        window.history.pushState(null, "", `https://${window.location.hostname}/careers/?${qs.join("&")}`);
+        window.history.pushState(null, "", `https://${window.location.hostname}/careers${qs.length ? "/?" : ""}${qs.join("&")}`);
         state.filteredJobs = filteredJobs;
     };
-    const populateDropdowns = async () => {
+    const populateDropdowns = async (selectionText) => {
         try {
             const sp = new URLSearchParams(window.location.search);
             const jobs = state.jobs;
@@ -146,7 +147,7 @@ window.addEventListener("load", async () => {
                             }
                             default: {
                                 labelEl.classList.add("active-toggle");
-                                selectionEl.textContent = `${numSelected} Selections`;
+                                selectionEl.textContent = `${numSelected} ${selectionText}`;
                                 selectionEl.classList.add("active");
                                 break;
                             }
@@ -331,6 +332,7 @@ window.addEventListener("load", async () => {
     const jobsContainer = document.querySelector("div.careers-job-list");
     if (jobsContainer) {
         // fetching jobs
+        let selectionText = "";
         try {
             const req = await fetch(" https://0a50cfhnal.execute-api.us-east-1.amazonaws.com/sandbox/jobs");
             const res = await req.json();
@@ -340,7 +342,30 @@ window.addEventListener("load", async () => {
                 state.jobs = jobs;
                 state.filteredJobs = jobs;
                 renderJobs();
-                populateDropdowns();
+                const selectionMap = {
+                    "fr-fr": "Sélectionné",
+                    "de-de": "Ausgewählt",
+                    "it-it": "Selezionato",
+                    "es-es": "Seleccionado",
+                    "ar-ae": "التفضيلات",
+                    "ar-sa": "التفضيلات",
+                    "pt-pt": "Seleccionado",
+                    en: "Selections",
+                };
+                const hiddenLangEl = document.getElementById("hidden-page-language");
+                if (hiddenLangEl) {
+                    const langCode = (_a = hiddenLangEl.textContent) === null || _a === void 0 ? void 0 : _a.trim();
+                    if (selectionMap[langCode]) {
+                        selectionText = selectionMap[langCode];
+                    }
+                    else {
+                        selectionText = selectionMap["en"];
+                    }
+                }
+                else {
+                    selectionText = selectionMap["en"];
+                }
+                populateDropdowns(selectionText);
             }
             else
                 throw new Error(res.msg);

@@ -77,6 +77,7 @@ window.addEventListener("load", () => {
                 image_url: "",
                 length: "",
                 category: "",
+                paragraph_text: "",
                 color: {
                     tag: "rgb(4, 136, 210)",
                     text: "rgb(255, 255, 255)",
@@ -96,6 +97,13 @@ window.addEventListener("load", () => {
             const durationEl = document.querySelector("div#episode-duration");
             if (durationEl)
                 questionDetails.length = durationEl.textContent + "";
+            // extracting paragraph text
+            const richTextEl = document.querySelector(`div[data-rich-text="paragraph"]`);
+            if (richTextEl) {
+                const paraEl = richTextEl.querySelector("p");
+                if (paraEl)
+                    questionDetails.paragraph_text = paraEl.textContent + "";
+            }
             // extracting category and colours
             const categoryEl = document.querySelector("div#card-category");
             if (categoryEl) {
@@ -172,9 +180,7 @@ window.addEventListener("load", () => {
         }
         localStorage.setItem("recently-visited-items", JSON.stringify(recently_visited_items));
     }
-    else if (type === "courses" ||
-        type === "the-love-and-respect-experience-video-devotional" ||
-        type === "15-day-marriage-plan") {
+    else if (type === "courses") {
         const courses = JSON.parse(localStorage.getItem("courses") || "[]");
         const courseIndex = courses.findIndex((a) => a.id === id);
         if (courseIndex !== -1) {
@@ -190,6 +196,8 @@ window.addEventListener("load", () => {
                 heading: "",
                 image_url: "",
                 url: "",
+                type,
+                session: 0,
             };
             courseDetails.url = window.location.href;
             // extracting heading
@@ -205,5 +213,66 @@ window.addEventListener("load", () => {
             courses.unshift(courseDetails);
         }
         localStorage.setItem("courses", JSON.stringify(courses));
+    }
+    else if (type === "the-love-and-respect-experience-video-devotional" ||
+        type === "15-day-marriage-plan") {
+        const courses = JSON.parse(localStorage.getItem("courses") || "[]");
+        const courseIndex = courses.findIndex((a) => a.type === type);
+        if (courseIndex !== -1) {
+            courses[courseIndex].url = window.location.href;
+            for (let i = courseIndex; i > 0; i--) {
+                const temp = courses[i];
+                courses[i] = courses[i - 1];
+                courses[i - 1] = temp;
+            }
+        }
+        else {
+            const courseDetails = {
+                id: id,
+                heading: "",
+                image_url: "",
+                url: "",
+                type,
+                session: 0,
+            };
+            courseDetails.url = window.location.href;
+            // extracting heading
+            const headingEl = document.querySelector("h1#card-heading");
+            if (headingEl)
+                courseDetails.heading = headingEl.textContent + "";
+            if (type === "the-love-and-respect-experience-video-devotional") {
+                courseDetails.image_url = `https://uploads-ssl.webflow.com/6033bb06812d4c6b521b0c9e/64d216ac1670476693fc42d3_64b0297ed59e42dc1353d0a9_Love%20and%20Respect%20Experience%20Devotional%201%20(1).webp`;
+            }
+            else if (type === "15-day-marriage-plan") {
+                courseDetails.image_url = `https://uploads-ssl.webflow.com/6033bb06812d4c6b521b0c9e/64d2161b1339b5903b846eea_64b029459c9dbdfa44ffb09b_15%20Day%20Marriage%20Plan.webp`;
+            }
+            if (courses.length === limit)
+                courses.pop();
+            courses.unshift(courseDetails);
+        }
+        localStorage.setItem("courses", JSON.stringify(courses));
+    }
+    else if (type === "sessions") {
+        const courses = JSON.parse(localStorage.getItem("courses") || "[]");
+        const courseSlugEl = document.getElementById("course-slug");
+        if (courseSlugEl) {
+            let courseSlug = "";
+            const slugText = courseSlugEl.textContent;
+            if (slugText)
+                courseSlug = slugText.trim();
+            const courseIndex = courses.findIndex((a) => a.id === courseSlug);
+            if (courseIndex !== -1) {
+                courses[courseIndex].url = window.location.href;
+                for (let i = courseIndex; i > 0; i--) {
+                    const temp = courses[i];
+                    courses[i] = courses[i - 1];
+                    courses[i - 1] = temp;
+                }
+                localStorage.setItem("courses", JSON.stringify(courses));
+            }
+        }
+        else {
+            console.error("Error: Hidden elements for course slug missing!");
+        }
     }
 });

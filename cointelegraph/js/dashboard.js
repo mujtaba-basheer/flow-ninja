@@ -1,6 +1,6 @@
 const wizedIn = async () => {
+    const Wized = window.Wized;
     try {
-        const Wized = window.Wized;
         await Wized.request.execute("Get User Data");
         const { root, added } = await Wized.data.get("r.5.d");
         // await Wized.data.setVariable("to_invite", "");
@@ -104,5 +104,27 @@ const wizedIn = async () => {
     catch (error) {
         console.error(error);
     }
+    // Plans card
+    try {
+        const { result_1 } = (await Wized.data.get("r.3.d"));
+        if (result_1.subscription_period === "yearly") {
+            $(".pricin-main-tabs-menu a:last-child").trigger("click");
+        }
+        const addCurrentStyling = () => {
+            $(".dashboard-settings-pricing-card").each(function () {
+                const planStatusEl = this.querySelector(".plan-pill.current-plan div");
+                if (planStatusEl) {
+                    const planStatus = (planStatusEl.textContent || "").toLowerCase();
+                    if (planStatus === "current plan") {
+                        this.classList.add("current");
+                    }
+                }
+            });
+        };
+        setTimeout(addCurrentStyling, 1000);
+    }
+    catch (error) {
+        console.error(error);
+    }
 };
-wizedIn();
+window.addEventListener("load", wizedIn);

@@ -55,21 +55,25 @@ window.addEventListener("load", async () => {
     let isPaused = false;
     const containerWidth = videosContainer.getBoundingClientRect().width;
 
-    setInterval(() => {
+    const move = () => {
       if (isPaused) return;
       videosContainer.style.transform = `translateX(-${percentShift}%)`;
       videosContainerCopy.style.transform = `translateX(-${percentShift}%)`;
-      percentShift += 0.01;
+      percentShift += 0.075;
       if (percentShift >= 100) {
         videosContainer.style.transform = `translateX(0)`;
         videosContainerCopy.style.transform = `translateX(0)`;
         percentShift = 0;
       }
       videoEls.forEach((videoEl, i) => {
-        if (videoEl.paused) videoEl.play();
+        if (videoEl.paused && !isPaused) videoEl.play();
       });
-    }, 1);
+      window.requestAnimationFrame(move);
+    };
 
+    window.requestAnimationFrame(move);
+
+    /*
     const onMouseEnter = () => {
       isPaused = true;
       const { currentTime: initialTime, duration } = videoEls.item(0);
@@ -86,10 +90,12 @@ window.addEventListener("load", async () => {
       videoEls.forEach((videoEl) => {
         videoEl.play();
       });
+      window.requestAnimationFrame(move);
     };
 
     videosSection.addEventListener("mouseenter", onMouseEnter);
     videosSection.addEventListener("mouseleave", onMouseLeave);
+    */
   }
 
   // Matter-js
@@ -402,9 +408,9 @@ window.addEventListener("load", async () => {
               vertexSets[vertexSets.length - 1],
               {
                 render: {
-                  fillStyle: color,
-                  strokeStyle: color,
-                  lineWidth: 1,
+                  // fillStyle: color,
+                  // strokeStyle: color,
+                  // lineWidth: 1,
                   sprite: {
                     texture: `${imgUrlBase}/${item.imgName}`,
                     xScale: 1,

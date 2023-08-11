@@ -1,4 +1,5 @@
 window.addEventListener("load", () => {
+    // Recently Visited
     {
         const recently_visited_items = JSON.parse(localStorage.getItem("recently-visited-items") || "[]");
         const rootEl = document.querySelector("div.blogs-container");
@@ -50,11 +51,12 @@ window.addEventListener("load", () => {
                                             const headingEl = document.createElement("h3");
                                             headingEl.className = "h5-style";
                                             headingEl.textContent = heading;
+                                            const paraEl = document.createElement("p");
+                                            paraEl.className = "text-small mobile-invisible";
+                                            paraEl.textContent = paragraph_text;
                                             columnEl.appendChild(headingEl);
+                                            columnEl.appendChild(paraEl);
                                         }
-                                        const paraEl = document.createElement("p");
-                                        paraEl.className = "text-small mobile-invisible";
-                                        paraEl.textContent = paragraph_text;
                                         const infoWrapperEl = document.createElement("div");
                                         infoWrapperEl.className = "episode-info-wrapper";
                                         {
@@ -74,7 +76,6 @@ window.addEventListener("load", () => {
                                             infoWrapperEl.appendChild(divEl);
                                         }
                                         contentWrapperEl.appendChild(columnEl);
-                                        contentWrapperEl.appendChild(paraEl);
                                         contentWrapperEl.appendChild(infoWrapperEl);
                                     }
                                     linkEl.appendChild(imgWrapperEl);
@@ -258,7 +259,7 @@ window.addEventListener("load", () => {
                                             columnEl.appendChild(paraEl);
                                         }
                                         const flexEl = document.createElement("div");
-                                        flexEl.className = "flex-horizontal";
+                                        flexEl.className = "cms-item-metadata-wrap";
                                         {
                                             const infoWrapperEl_1 = document.createElement("div");
                                             infoWrapperEl_1.className = "episode-info-wrapper";
@@ -271,7 +272,8 @@ window.addEventListener("load", () => {
                                                 iconEl.loading = "lazy";
                                                 const divEl = document.createElement("div");
                                                 divEl.textContent = "Episode";
-                                                const epNoEl = document.createElement("div.episode-number");
+                                                const epNoEl = document.createElement("div");
+                                                epNoEl.className = "episode-number";
                                                 epNoEl.textContent = episode_number;
                                                 infoWrapperEl_1.appendChild(iconEl);
                                                 infoWrapperEl_1.appendChild(divEl);
@@ -436,7 +438,7 @@ window.addEventListener("load", () => {
                     }
                     else if (recently_visited_item.type === "ask-emerson") {
                         try {
-                            const { id, heading, image_url, length, category, color, url } = recently_visited_item;
+                            const { id, heading, image_url, length, category, color, url, paragraph_text, } = recently_visited_item;
                             const cardEl = document.createElement("div");
                             cardEl.id = id;
                             cardEl.className =
@@ -471,10 +473,14 @@ window.addEventListener("load", () => {
                                             const headingEl = document.createElement("h3");
                                             headingEl.className = "h5-style";
                                             headingEl.textContent = heading;
+                                            const paraEl = document.createElement("p");
+                                            paraEl.className = "text-small mobile-invisible";
+                                            paraEl.textContent = paragraph_text;
                                             columnEl.appendChild(headingEl);
+                                            columnEl.appendChild(paraEl);
                                         }
                                         const infoWrapperEl = document.createElement("div");
-                                        infoWrapperEl.className = "ask-emerson-item-info-post";
+                                        infoWrapperEl.className = "cms-item-metadata-wrap";
                                         {
                                             const divEl_1 = document.createElement("div");
                                             divEl_1.className = "episode-info-wrapper";
@@ -651,9 +657,10 @@ window.addEventListener("load", () => {
             }
         }
     }
+    // Courses
     {
         const courses = JSON.parse(localStorage.getItem("courses") || "[]");
-        const rootEl = document.querySelector("div.courses-container");
+        const rootEl = document.querySelector("div.courses-list");
         if (rootEl) {
             if (courses.length === 0) {
                 const sectionWrapper = document.querySelector("div#continue-course");
