@@ -20,6 +20,9 @@ window.addEventListener("load", () => {
         if (headingWrapper) headingWrapper.remove();
       } else {
         for (const recently_visited_item of recently_visited_items) {
+          const { heading, url, image_url } = recently_visited_item;
+          if (!(heading && url && image_url)) continue;
+
           if (recently_visited_item.type === "blog") {
             try {
               const {

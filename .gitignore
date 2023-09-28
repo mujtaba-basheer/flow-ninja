@@ -1,7 +1,6 @@
 .env
 /node_modules
 *.mp4
-tsconfig.json
 package-lock.json
 /prodyna/lambda/node_modules
 /filip/node_modules

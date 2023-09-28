@@ -41,6 +41,7 @@ window.addEventListener("load", async () => {
       videoEl.loop = true;
       videoEl.preload = "metadata";
       videoEl.setAttribute("controls", "true");
+      videoEl.setAttribute("playsinline", "true");
       // const currentTime = (i % 4) * (duration / 4);
       videoEl.currentTime = 0;
     });

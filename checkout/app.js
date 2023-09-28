@@ -13,8 +13,9 @@ const S3 = new AWS.S3({ credentials: creds });
 
 const filesToUpload = [
   // "registration",
-  "careers",
-  "payment-method",
+  // "careers",
+  "careers.v2",
+  // "payment-method",
   // "global",
   // "mission",
   // ""

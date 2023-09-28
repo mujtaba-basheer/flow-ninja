@@ -6,6 +6,7 @@ interface Window {
     data: {
       get: <T>(name: string) => Promise<T>;
       setVariable: (key: string, value: any) => Promise<null>;
+      listen: (value: string, listener: Function) => void;
     };
   };
 }
@@ -16,7 +17,7 @@ type AddedUserT = {
   Last_Name: string;
   groups_id: number;
 };
-type UserDataT = {
+type UserData5T = {
   root: {
     id: number;
     created_at: number;
@@ -35,13 +36,13 @@ const wizedIn = async () => {
   const Wized = window.Wized;
   try {
     await Wized.request.execute("Get User Data");
-    const { root, added } = await Wized.data.get<UserDataT>("r.5.d");
+    const { root, added } = await Wized.data.get<UserData5T>("r.5.d");
 
     // await Wized.data.setVariable("to_invite", "");
     const invitesWrapper = document.querySelector(
       ".dashboard-team-acc-wrapper"
     );
-    if (invitesWrapper) {
+    if (invitesWrapper && root) {
       const { quantity } = root;
       for (let i = 1; i <= quantity; i++) {
         const inviteEl = document.createElement("div");
@@ -151,24 +152,817 @@ const wizedIn = async () => {
 
   // Plans card
   try {
-    const { result_1 } = (await Wized.data.get("r.3.d")) as any;
-    if (result_1.subscription_period === "yearly") {
-      $(".pricin-main-tabs-menu a:last-child").trigger("click");
-    }
+    const monthlyTab = document.querySelector(
+      `div.monthly-tabs[data-w-tab="Monthly "]`
+    );
+    const yearlyTab = document.querySelector(
+      `div.yearly-tabs[data-w-tab="Yearly"]`
+    );
 
-    const addCurrentStyling = () => {
-      $(".dashboard-settings-pricing-card").each(function () {
-        const planStatusEl = this.querySelector(".plan-pill.current-plan div");
-        if (planStatusEl) {
-          const planStatus = (planStatusEl.textContent || "").toLowerCase();
-          if (planStatus === "current plan") {
-            this.classList.add("current");
+    if (monthlyTab && yearlyTab) {
+      const userData = await Wized.data.get<UserData3T>("r.3.d.result_1");
+      if (userData) {
+        const { subscription_period, plan_type } = userData;
+
+        const monthlyCards = monthlyTab.querySelectorAll<HTMLAnchorElement>(
+          "a.dashboard-settings-pricing-card"
+        );
+        const yearlyCards = yearlyTab.querySelectorAll<HTMLAnchorElement>(
+          "a.dashboard-settings-pricing-card"
+        );
+
+        console.log(
+          `%c${plan_type} ${subscription_period}`,
+          "color: blue; background: yellow; text-transform: uppercase;"
+        );
+        switch (subscription_period) {
+          case "yearly": {
+            const yearlyTabLink = document.querySelector<HTMLAnchorElement>(
+              `a.yearly-tab-link[data-w-tab="Yearly"]`
+            );
+            if (yearlyTabLink) $(yearlyTabLink).trigger("click");
+
+            switch (plan_type) {
+              case "free": {
+                // free cards
+                {
+                  let freeCard = monthlyCards.item(0);
+                  freeCard.classList.add("current");
+                  let labelEl = freeCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Current plan";
+                  }
+
+                  let newCard = freeCard.cloneNode(true);
+                  freeCard.parentNode?.replaceChild(newCard, freeCard);
+
+                  freeCard = yearlyCards.item(0);
+                  freeCard.classList.add("current");
+                  labelEl = freeCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Current plan";
+                  }
+
+                  newCard = freeCard.cloneNode(true);
+                  freeCard.parentNode?.replaceChild(newCard, freeCard);
+                }
+
+                // pro cards
+                {
+                  let proCard = monthlyCards.item(1);
+                  proCard.classList.remove("current");
+                  let labelEl = proCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Upgrade plan";
+                  }
+
+                  let newCard = proCard.cloneNode(true);
+                  proCard.parentNode?.replaceChild(newCard, proCard);
+
+                  proCard = yearlyCards.item(1);
+                  proCard.classList.remove("current");
+                  labelEl = proCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Upgrade plan";
+                  }
+
+                  newCard = proCard.cloneNode(true);
+                  proCard.parentNode?.replaceChild(newCard, proCard);
+                }
+
+                // premium cards
+                {
+                  let premiumCard = monthlyCards.item(2);
+                  premiumCard.classList.remove("current");
+                  let labelEl = premiumCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Upgrade plan";
+                  }
+
+                  let newCard = premiumCard.cloneNode(true);
+                  premiumCard.parentNode?.replaceChild(newCard, premiumCard);
+
+                  premiumCard = yearlyCards.item(2);
+                  premiumCard.classList.remove("current");
+                  labelEl = premiumCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Upgrade plan";
+                  }
+
+                  newCard = premiumCard.cloneNode(true);
+                  premiumCard.parentNode?.replaceChild(newCard, premiumCard);
+                }
+
+                // enterprise cards
+                {
+                  let enterpriseCard = monthlyCards.item(3);
+                  enterpriseCard.classList.remove("current");
+                  let labelEl = enterpriseCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Contact us";
+                  }
+
+                  enterpriseCard = yearlyCards.item(3);
+                  enterpriseCard.classList.remove("current");
+                  labelEl = enterpriseCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Contact us";
+                  }
+                }
+                break;
+              }
+              case "pro": {
+                // free cards
+                {
+                  let freeCard = monthlyCards.item(0);
+                  freeCard.classList.remove("current");
+                  let labelEl = freeCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Downgrade plan";
+                  }
+
+                  freeCard = yearlyCards.item(0);
+                  freeCard.classList.remove("current");
+                  labelEl = freeCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Downgrade plan";
+                  }
+                }
+
+                // pro cards
+                {
+                  let proCard = monthlyCards.item(1);
+                  proCard.classList.remove("current");
+                  proCard.href = "#";
+                  let labelEl = proCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Downgrade plan";
+                  }
+
+                  proCard = yearlyCards.item(1);
+                  proCard.classList.add("current");
+                  proCard.href = "#";
+                  labelEl = proCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Current plan";
+                  }
+
+                  let newCard = proCard.cloneNode(true);
+                  proCard.parentNode?.replaceChild(newCard, proCard);
+                }
+
+                // premium cards
+                {
+                  let premiumCard = monthlyCards.item(2);
+                  premiumCard.classList.remove("current");
+                  premiumCard.href = "#";
+                  let labelEl = premiumCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Upgrade plan";
+                  }
+
+                  premiumCard = yearlyCards.item(2);
+                  premiumCard.classList.remove("current");
+                  premiumCard.href = "#";
+                  labelEl = premiumCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Upgrade plan";
+                  }
+                }
+
+                // enterprise cards
+                {
+                  let enterpriseCard = monthlyCards.item(3);
+                  enterpriseCard.classList.remove("current");
+                  let labelEl = enterpriseCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Contact us";
+                  }
+
+                  enterpriseCard = yearlyCards.item(3);
+                  enterpriseCard.classList.remove("current");
+                  labelEl = enterpriseCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Contact us";
+                  }
+                }
+                break;
+              }
+              case "premium": {
+                // free cards
+                {
+                  let freeCard = monthlyCards.item(0);
+                  freeCard.classList.remove("current");
+                  let labelEl = freeCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Downgrade plan";
+                  }
+
+                  freeCard = yearlyCards.item(0);
+                  freeCard.classList.remove("current");
+                  labelEl = freeCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Downgrade plan";
+                  }
+                }
+
+                // pro cards
+                {
+                  let proCard = monthlyCards.item(1);
+                  proCard.classList.remove("current");
+                  proCard.href = "#";
+                  let labelEl = proCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Dwongrade plan";
+                  }
+
+                  proCard = yearlyCards.item(1);
+                  proCard.classList.remove("current");
+                  proCard.href = "#";
+                  labelEl = proCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Dwongrade plan";
+                  }
+                }
+
+                // premium cards
+                {
+                  let premiumCard = monthlyCards.item(2);
+                  premiumCard.classList.remove("current");
+                  premiumCard.href = "#";
+                  let labelEl = premiumCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Downgrade plan";
+                  }
+
+                  premiumCard = yearlyCards.item(2);
+                  premiumCard.classList.add("current");
+                  premiumCard.href = "#";
+                  labelEl = premiumCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Current plan";
+                  }
+
+                  let newCard = premiumCard.cloneNode(true);
+                  premiumCard.parentNode?.replaceChild(newCard, premiumCard);
+                }
+
+                // enterprise cards
+                {
+                  let enterpriseCard = monthlyCards.item(3);
+                  enterpriseCard.classList.remove("current");
+                  let labelEl = enterpriseCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Contact us";
+                  }
+
+                  enterpriseCard = yearlyCards.item(3);
+                  enterpriseCard.classList.remove("current");
+                  labelEl = enterpriseCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Contact us";
+                  }
+                }
+                break;
+              }
+              case "enterprise": {
+                // free cards
+                {
+                  let freeCard = monthlyCards.item(0);
+                  freeCard.classList.remove("current");
+                  let labelEl = freeCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Downgrade plan";
+                  }
+
+                  freeCard = yearlyCards.item(0);
+                  freeCard.classList.remove("current");
+                  labelEl = freeCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Downgrade plan";
+                  }
+                }
+
+                // pro cards
+                {
+                  let proCard = monthlyCards.item(1);
+                  proCard.classList.remove("current");
+                  proCard.href = "#";
+                  let labelEl = proCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Dwongrade plan";
+                  }
+
+                  proCard = yearlyCards.item(1);
+                  proCard.classList.remove("current");
+                  proCard.href = "#";
+                  labelEl = proCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Dwongrade plan";
+                  }
+                }
+
+                // premium cards
+                {
+                  let premiumCard = monthlyCards.item(2);
+                  premiumCard.classList.remove("current");
+                  premiumCard.href = "#";
+                  let labelEl = premiumCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Downgrade plan";
+                  }
+
+                  premiumCard = yearlyCards.item(2);
+                  premiumCard.classList.remove("current");
+                  premiumCard.href = "#";
+                  labelEl = premiumCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Downgrade plan";
+                  }
+                }
+
+                // enterprise cards
+                {
+                  let enterpriseCard = monthlyCards.item(3);
+                  enterpriseCard.classList.remove("current");
+                  let labelEl = enterpriseCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Contact us";
+                  }
+
+                  enterpriseCard = yearlyCards.item(3);
+                  enterpriseCard.classList.add("current");
+                  enterpriseCard.href = "#";
+                  enterpriseCard.addEventListener("click", (ev) =>
+                    ev.preventDefault()
+                  );
+                  labelEl = enterpriseCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Current plan";
+                  }
+                }
+                break;
+              }
+            }
+            break;
+          }
+          default: {
+            switch (plan_type) {
+              case "free": {
+                // free cards
+                {
+                  let freeCard = monthlyCards.item(0);
+                  freeCard.classList.add("current");
+                  let labelEl = freeCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Current plan";
+                  }
+
+                  let newCard = freeCard.cloneNode(true);
+                  freeCard.parentNode?.replaceChild(newCard, freeCard);
+
+                  freeCard = yearlyCards.item(0);
+                  freeCard.classList.add("current");
+                  labelEl = freeCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Current plan";
+                  }
+
+                  newCard = freeCard.cloneNode(true);
+                  freeCard.parentNode?.replaceChild(newCard, freeCard);
+                }
+
+                // pro cards
+                {
+                  let proCard = monthlyCards.item(1);
+                  proCard.classList.remove("current");
+                  let labelEl = proCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Upgrade plan";
+                  }
+
+                  let newCard = proCard.cloneNode(true);
+                  proCard.parentNode?.replaceChild(newCard, proCard);
+
+                  proCard = yearlyCards.item(1);
+                  proCard.classList.remove("current");
+                  labelEl = proCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Upgrade plan";
+                  }
+
+                  newCard = proCard.cloneNode(true);
+                  proCard.parentNode?.replaceChild(newCard, proCard);
+                }
+
+                // premium cards
+                {
+                  let premiumCard = monthlyCards.item(2);
+                  premiumCard.classList.remove("current");
+                  let labelEl = premiumCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+
+                  if (labelEl) {
+                    labelEl.textContent = "Upgrade plan";
+                  }
+
+                  let newCard = premiumCard.cloneNode(true);
+                  premiumCard.parentNode?.replaceChild(newCard, premiumCard);
+
+                  premiumCard = yearlyCards.item(2);
+                  premiumCard.classList.remove("current");
+                  labelEl = premiumCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Upgrade plan";
+                  }
+
+                  newCard = premiumCard.cloneNode(true);
+                  premiumCard.parentNode?.replaceChild(newCard, premiumCard);
+                }
+
+                // enterprise cards
+                {
+                  let enterpriseCard = monthlyCards.item(3);
+                  enterpriseCard.classList.remove("current");
+                  let labelEl = enterpriseCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Contact us";
+                  }
+
+                  enterpriseCard = yearlyCards.item(3);
+                  enterpriseCard.classList.remove("current");
+                  labelEl = enterpriseCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Contact us";
+                  }
+                }
+                break;
+              }
+              case "pro": {
+                // free cards
+                {
+                  let freeCard = monthlyCards.item(0);
+                  freeCard.classList.remove("current");
+                  let labelEl = freeCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Downgrade plan";
+                  }
+
+                  freeCard = yearlyCards.item(0);
+                  freeCard.classList.remove("current");
+                  labelEl = freeCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Downgrade plan";
+                  }
+                }
+
+                // pro cards
+                {
+                  let proCard = monthlyCards.item(1);
+                  proCard.classList.add("current");
+                  proCard.href = "#";
+                  let labelEl = proCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Current plan";
+                  }
+
+                  let newCard = proCard.cloneNode(true);
+                  proCard.parentNode?.replaceChild(newCard, proCard);
+
+                  proCard = yearlyCards.item(1);
+                  proCard.classList.remove("current");
+                  proCard.href = "#";
+                  labelEl = proCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Upgrade plan";
+                  }
+                }
+
+                // premium cards
+                {
+                  let premiumCard = monthlyCards.item(2);
+                  premiumCard.classList.remove("current");
+                  premiumCard.href = "#";
+                  let labelEl = premiumCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Upgrade plan";
+                  }
+
+                  premiumCard = yearlyCards.item(2);
+                  premiumCard.classList.remove("current");
+                  premiumCard.href = "#";
+                  labelEl = premiumCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Upgrade plan";
+                  }
+                }
+
+                // enterprise cards
+                {
+                  let enterpriseCard = monthlyCards.item(3);
+                  enterpriseCard.classList.remove("current");
+                  let labelEl = enterpriseCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Contact us";
+                  }
+
+                  enterpriseCard = yearlyCards.item(3);
+                  enterpriseCard.classList.remove("current");
+                  labelEl = enterpriseCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Contact us";
+                  }
+                }
+                break;
+              }
+              case "premium": {
+                // free cards
+                {
+                  let freeCard = monthlyCards.item(0);
+                  freeCard.classList.remove("current");
+                  let labelEl = freeCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Downgrade plan";
+                  }
+
+                  freeCard = yearlyCards.item(0);
+                  freeCard.classList.remove("current");
+                  labelEl = freeCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Downgrade plan";
+                  }
+                }
+
+                // pro cards
+                {
+                  let proCard = monthlyCards.item(1);
+                  proCard.classList.remove("current");
+                  proCard.href = "#";
+                  let labelEl = proCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Dwongrade plan";
+                  }
+
+                  proCard = yearlyCards.item(1);
+                  proCard.classList.remove("current");
+                  proCard.href = "#";
+                  labelEl = proCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Dwongrade plan";
+                  }
+                }
+
+                // premium cards
+                {
+                  let premiumCard = monthlyCards.item(2);
+                  premiumCard.classList.add("current");
+                  premiumCard.href = "#";
+                  let labelEl = premiumCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Current plan";
+                  }
+
+                  let newCard = premiumCard.cloneNode(true);
+                  premiumCard.parentNode?.replaceChild(newCard, premiumCard);
+
+                  premiumCard = yearlyCards.item(2);
+                  premiumCard.classList.remove("current");
+                  premiumCard.href = "#";
+                  labelEl = premiumCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Upgrade plan";
+                  }
+                }
+
+                // enterprise cards
+                {
+                  let enterpriseCard = monthlyCards.item(3);
+                  enterpriseCard.classList.remove("current");
+                  let labelEl = enterpriseCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Contact us";
+                  }
+
+                  enterpriseCard = yearlyCards.item(3);
+                  enterpriseCard.classList.remove("current");
+                  labelEl = enterpriseCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Contact us";
+                  }
+                }
+                break;
+              }
+              case "enterprise": {
+                // free cards
+                {
+                  let freeCard = monthlyCards.item(0);
+                  freeCard.classList.remove("current");
+                  let labelEl = freeCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Downgrade plan";
+                  }
+
+                  freeCard = yearlyCards.item(0);
+                  freeCard.classList.remove("current");
+                  labelEl = freeCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Downgrade plan";
+                  }
+                }
+
+                // pro cards
+                {
+                  let proCard = monthlyCards.item(1);
+                  proCard.classList.remove("current");
+                  proCard.href = "#";
+                  let labelEl = proCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Dwongrade plan";
+                  }
+
+                  proCard = yearlyCards.item(1);
+                  proCard.classList.remove("current");
+                  proCard.href = "#";
+                  labelEl = proCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Dwongrade plan";
+                  }
+                }
+
+                // premium cards
+                {
+                  let premiumCard = monthlyCards.item(2);
+                  premiumCard.classList.remove("current");
+                  premiumCard.href = "#";
+                  let labelEl = premiumCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Downgrade plan";
+                  }
+
+                  premiumCard = yearlyCards.item(2);
+                  premiumCard.classList.remove("current");
+                  premiumCard.href = "#";
+                  labelEl = premiumCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Downgrade plan";
+                  }
+                }
+
+                // enterprise cards
+                {
+                  let enterpriseCard = monthlyCards.item(3);
+                  enterpriseCard.classList.add("current");
+                  enterpriseCard.href = "#";
+                  enterpriseCard.addEventListener("click", (ev) =>
+                    ev.preventDefault()
+                  );
+                  let labelEl = enterpriseCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Current plan";
+                  }
+
+                  enterpriseCard = yearlyCards.item(3);
+                  enterpriseCard.classList.remove("current");
+                  labelEl = enterpriseCard.querySelector<HTMLDivElement>(
+                    "div.plan-pill.current-plan .label-s"
+                  );
+                  if (labelEl) {
+                    labelEl.textContent = "Contact us";
+                  }
+                }
+                break;
+              }
+            }
+            break;
           }
         }
-      });
-    };
-
-    setTimeout(addCurrentStyling, 1000);
+      }
+    }
   } catch (error) {
     console.error(error);
   }

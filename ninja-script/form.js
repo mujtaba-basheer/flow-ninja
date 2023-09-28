@@ -36,6 +36,16 @@ window.addEventListener("load", () => {
             if (flag && inputField.type === "email") {
                 const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/g;
                 flag = re.test(inputField.value);
+                const isBusiness = inputField.getAttribute("business");
+                const exlcude = inputField.getAttribute("exclude");
+                if (isBusiness === "true" && exlcude) {
+                    const toExlcude = exlcude.split(",").map((e) => "@" + e.trim());
+                    for (const end of toExlcude) {
+                        flag = !inputField.value.endsWith(end);
+                        if (!flag)
+                            break;
+                    }
+                }
             }
             // handling tel/mobile inputs
             if (flag && inputField.type === "tel") {
@@ -48,6 +58,10 @@ window.addEventListener("load", () => {
             let inputPattern = inputField.getAttribute("data-pattern");
             if (flag && inputPattern) {
                 flag = inputField.value.startsWith(inputPattern);
+            }
+            // handling native regex pattern
+            if (flag) {
+                flag = inputField.checkValidity();
             }
             inputPattern = inputField.getAttribute("pattern");
             if (flag && inputPattern) {
@@ -260,6 +274,16 @@ window.addEventListener("load", () => {
                 if (flag && inputField.type === "email") {
                     const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/g;
                     flag = re.test(inputField.value);
+                    const isBusiness = inputField.getAttribute("business");
+                    const exlcude = inputField.getAttribute("exclude");
+                    if (isBusiness === "true" && exlcude) {
+                        const toExlcude = exlcude.split(",").map((e) => "@" + e.trim());
+                        for (const end of toExlcude) {
+                            flag = !inputField.value.endsWith(end);
+                            if (!flag)
+                                break;
+                        }
+                    }
                 }
                 // handling tel/mobile inputs
                 if (flag && inputField.type === "tel") {
@@ -270,6 +294,10 @@ window.addEventListener("load", () => {
                 const inputPattern = inputField.getAttribute("data-pattern");
                 if (flag && inputPattern) {
                     flag = inputField.value.startsWith(inputPattern);
+                }
+                // handling native regex pattern
+                if (flag) {
+                    flag = inputField.checkValidity();
                 }
                 // changing UI as per validation result
                 const errorEl = formEl.querySelector(`div[error-label="${inputField.id}"]`);

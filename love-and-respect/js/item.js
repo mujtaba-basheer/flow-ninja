@@ -180,40 +180,6 @@ window.addEventListener("load", () => {
         }
         localStorage.setItem("recently-visited-items", JSON.stringify(recently_visited_items));
     }
-    else if (type === "courses") {
-        const courses = JSON.parse(localStorage.getItem("courses") || "[]");
-        const courseIndex = courses.findIndex((a) => a.id === id);
-        if (courseIndex !== -1) {
-            for (let i = courseIndex; i > 0; i--) {
-                const temp = courses[i];
-                courses[i] = courses[i - 1];
-                courses[i - 1] = temp;
-            }
-        }
-        else {
-            const courseDetails = {
-                id: id,
-                heading: "",
-                image_url: "",
-                url: "",
-                type,
-                session: 0,
-            };
-            courseDetails.url = window.location.href;
-            // extracting heading
-            const headingEl = document.querySelector("h1#card-heading");
-            if (headingEl)
-                courseDetails.heading = headingEl.textContent + "";
-            // extracting image url
-            const imageEl = document.querySelector("img#card-image");
-            if (imageEl)
-                courseDetails.image_url = imageEl.src;
-            if (courses.length === limit)
-                courses.pop();
-            courses.unshift(courseDetails);
-        }
-        localStorage.setItem("courses", JSON.stringify(courses));
-    }
     else if (type === "the-love-and-respect-experience-video-devotional" ||
         type === "15-day-marriage-plan") {
         const courses = JSON.parse(localStorage.getItem("courses") || "[]");
@@ -233,7 +199,6 @@ window.addEventListener("load", () => {
                 image_url: "",
                 url: "",
                 type,
-                session: 0,
             };
             courseDetails.url = window.location.href;
             // extracting heading
@@ -255,6 +220,7 @@ window.addEventListener("load", () => {
     else if (type === "sessions") {
         const courses = JSON.parse(localStorage.getItem("courses") || "[]");
         const courseSlugEl = document.getElementById("course-slug");
+        const courseImgEl = document.getElementById("course-img");
         if (courseSlugEl) {
             let courseSlug = "";
             const slugText = courseSlugEl.textContent;
@@ -268,6 +234,20 @@ window.addEventListener("load", () => {
                     courses[i] = courses[i - 1];
                     courses[i - 1] = temp;
                 }
+                localStorage.setItem("courses", JSON.stringify(courses));
+            }
+            else if (courseImgEl) {
+                const courseImg = courseImgEl.src;
+                const courseDetails = {
+                    id: courseSlug,
+                    type: "courses",
+                    image_url: courseImg,
+                    heading: "",
+                    url: window.location.href,
+                };
+                if (courses.length === limit)
+                    courses.pop();
+                courses.unshift(courseDetails);
                 localStorage.setItem("courses", JSON.stringify(courses));
             }
         }

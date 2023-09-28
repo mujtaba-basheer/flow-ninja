@@ -7,6 +7,7 @@ var formHeaders = [];
 var formResponse = [];
 
 window.addEventListener("load", async () => {
+  const Wized = window.Wized;
   var curUrl = new URL(document.location.href);
   var code = curUrl.searchParams.get("code");
   if (code) {
@@ -20,7 +21,7 @@ window.addEventListener("load", async () => {
 });
 
 function continueOauth(code) {
-  var fetchURL = new URL(xano_oauth_continue_url);
+  let fetchURL: any = new URL(xano_oauth_continue_url);
   fetchURL.searchParams.set("redirect_uri", redirect_uri);
   fetchURL.searchParams.set("code", code);
   fetchURL = fetchURL.toString();
